@@ -139,7 +139,6 @@ async function fetchExcel(){
   };
 
   return Promise.any(urls.map(u => tryUrl(u)));
-}
 
 
 // ââ Fallback static data (last known good â updates when live fetch succeeds) ââ
@@ -181,7 +180,6 @@ async function loadData(){
     document.getElementById('app').insertBefore(warn,document.getElementById('app').firstChild);
   }
   sendHeight();
-}
 
 
 async function tryFetch(url){
@@ -195,7 +193,6 @@ async function tryFetch(url){
     if(buf.byteLength<500) throw new Error('Too small');
     return buf;
   }catch(e){ clearTimeout(t); throw e; }
-}
 
 function filtered(){
   const maxW=D.length?Math.max(...D.map(r=>r.w)):0;
@@ -206,7 +203,6 @@ function filtered(){
     if(state.deal!=='All'&&r.prod!==state.deal)return false;
     return true;
   });
-}
 
 function rebuildFilters(){
   ['timeFilters','ptFilters','brokerSel','dealSel','tabs'].forEach(id=>document.getElementById(id).innerHTML='');
@@ -240,7 +236,6 @@ function rebuildFilters(){
     b.className='tab'+(state.tab===t.id?' active':''); b.innerHTML=t.icon+' '+t.lbl;
     b.onclick=()=>{state.tab=t.id;render();}; tabEl.appendChild(b);
   });
-}
 
 function render(){
   document.querySelectorAll('#timeFilters .btn').forEach(b=>b.classList.toggle('active',b.textContent===state.time));
@@ -269,7 +264,6 @@ function render(){
   else if(state.tab==='flow') renderFlow(d,panel);
   else renderTable(d,panel);
   sendHeight();
-}
 
 function renderBroker(d,panel){
   const dm={};
@@ -315,7 +309,6 @@ function renderBroker(d,panel){
   }
   window.__td=name=>{col[name]=col[name]===false?true:false;rt();sendHeight();};
   rt();
-}
 
 function renderTrend(d,panel){
   const wks=[...new Set(d.map(r=>r.w))].sort((a,b)=>a-b);
@@ -328,7 +321,6 @@ function renderTrend(d,panel){
       {label:'Renewal Business',data:wks.map(w=>d.filter(r=>r.w===w&&r.pt==='Renewal').reduce((s,r)=>s+r.u,0)),backgroundColor:'#4CAF80',borderRadius:4,stack:'s'}
     ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11},color:'#5a7a5a'}},y:{stacked:true,grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},color:'#5a7a5a',callback:v=>fmt(v)}}}}});
   },50);
-}
 
 function renderFlow(d,panel){
   const pm={},tm={A:0,B:0,C:0,D:0},prm={};
@@ -351,7 +343,6 @@ function renderFlow(d,panel){
       <div class="flow-row"><span>Unique Brokers</span><span class="flow-val">${new Set(d.map(r=>r.b)).size}</span></div>
     </div>
   </div>`;
-}
 
 function renderTable(d,panel){
   const rows=[...d].sort((a,b)=>b.u-a.u).slice(0,60);
@@ -367,7 +358,6 @@ function renderTable(d,panel){
       <td style="font-size:11px;color:#5a7a5a">${r.m} Wk${r.w}</td>
     </tr>`).join('')}</tbody>
   </table>${rows.length<d.length?`<div style="text-align:center;padding:10px;font-size:11px;color:#7a9a7a">Top 60 of ${d.length} shown</div>`:''}</div>`;
-}
 
 loadData();
 // Auto-refresh every 5 minutes
