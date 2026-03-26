@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Seven Insurance — Commission Dashboard</title>
+<title>Seven Insurance â Commission Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -70,9 +70,9 @@ tr:hover td{background:#f8fbf8}
 
 <div id="app" class="db" style="display:none">
   <div class="kpi-row">
-    <div class="kpi"><div class="kpi-label">Total Commission</div><div class="kpi-val" id="k1">—</div><div class="kpi-sub" id="k1s"></div></div>
-    <div class="kpi"><div class="kpi-label">New Business</div><div class="kpi-val" id="k2" style="color:#1a6e3a">—</div><div class="kpi-sub" id="k2s"></div></div>
-    <div class="kpi"><div class="kpi-label">Renewal Business</div><div class="kpi-val" id="k3" style="color:#1a4e6e">—</div><div class="kpi-sub" id="k3s"></div></div>
+    <div class="kpi"><div class="kpi-label">Total Commission</div><div class="kpi-val" id="k1">â</div><div class="kpi-sub" id="k1s"></div></div>
+    <div class="kpi"><div class="kpi-label">New Business</div><div class="kpi-val" id="k2" style="color:#1a6e3a">â</div><div class="kpi-sub" id="k2s"></div></div>
+    <div class="kpi"><div class="kpi-label">Renewal Business</div><div class="kpi-val" id="k3" style="color:#1a4e6e">â</div><div class="kpi-sub" id="k3s"></div></div>
   </div>
 
   <div class="filters">
@@ -80,7 +80,7 @@ tr:hover td{background:#f8fbf8}
       <div class="f-title">Filters</div>
       <div style="display:flex;align-items:center;gap:10px">
         <span class="ts" id="lastUpdated"></span>
-        <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+        <button class="refresh-btn" onclick="loadData()">â» Refresh</button>
       </div>
     </div>
     <div class="f-row">
@@ -103,7 +103,7 @@ window.addEventListener("resize",sendHeight);
 const SP_SITE = 'https://seveninsurancebrokers.sharepoint.com/sites/SIBIntranet';
 const SHARE_LINK = 'https://seveninsurancebrokers.sharepoint.com/:x:/s/SIBIntranet/IQDkXxThS1tJQbRprkK2TL9aAWHqqzR1EXiaoA9bTUXRKpU?e=w5Ld4I&download=1';
 
-// All possible paths for the Excel file — tries each in order
+// All possible paths for the Excel file â tries each in order
 const FILE_PATHS = [
   '/sites/SIBIntranet/Shared Documents/GIM Weekly Report - 2026.xlsx',
   '/sites/SIBIntranet/Shared Documents/GIM_Weekly_Report_-_2026.xlsx',
@@ -114,14 +114,13 @@ let D=[], chartInst=null;
 let state={time:'1W',pt:'All',broker:'All',deal:'All',tab:'broker'};
 const fmt=v=>'$'+(v>=1e6?(v/1e6).toFixed(2)+'M':v>=1e3?Math.round(v/1e3)+'K':Math.round(v).toLocaleString());
 
-}
 
 async function fetchExcel(){
   document.getElementById('loadMsg').textContent='Loading from SharePoint...';
 
   // Build all URLs to try simultaneously
   const urls = [
-    // REST API — exact known path, spaces encoded as %20
+    // REST API â exact known path, spaces encoded as %20
     `${SP_SITE}/_api/web/GetFileByServerRelativeUrl('/sites/SIBIntranet/Shared%20Documents/GIM%20Weekly%20Report%20-%202026.xlsx')/$value`,
     // With underscore variant (in case file was saved with underscores)
     `${SP_SITE}/_api/web/GetFileByServerRelativeUrl('/sites/SIBIntranet/Shared%20Documents/GIM_Weekly_Report_-_2026.xlsx')/$value`,
@@ -143,7 +142,7 @@ async function fetchExcel(){
 }
 
 
-// ── Fallback static data (last known good — updates when live fetch succeeds) ──
+// ââ Fallback static data (last known good â updates when live fetch succeeds) ââ
 const FALLBACK=[
 {w:2,b:"Individual Retention",div:"Topsurance",m:"Jan",pt:"Renewal",prod:"Med Individual",prov:"Takaful Emarat",t:"D",u:131},{w:2,b:"Sooraj Thaha",div:"Direct",m:"Jan",pt:"Renewal",prod:"Med Individual",prov:"Cigna",t:"D",u:3901},{w:2,b:"Stephen Maclaren",div:"Stephen Maclaren",m:"Jan",pt:"Renewal",prod:"Group Medical",prov:"Cigna",t:"A",u:30300},{w:2,b:"Kelly Montoya",div:"Topsurance",m:"Jan",pt:"New",prod:"Med Individual",prov:"Orient Insurance",t:"D",u:148},{w:2,b:"Aaron Pinto",div:"Aaron Pinto",m:"Jan",pt:"Renewal",prod:"Med Individual",prov:"Takaful Emarat",t:"D",u:658},{w:2,b:"Sonny Ridgewell",div:"Sonny Ridgewell",m:"Jan",pt:"New",prod:"Med Individual",prov:"Cigna",t:"C",u:6112},{w:2,b:"Ruben Dario Serna",div:"Topsurance",m:"Jan",pt:"Renewal",prod:"Group Medical",prov:"Hanse Merkur",t:"B",u:18234},{w:2,b:"Sonny Ridgewell",div:"Sonny Ridgewell",m:"Jan",pt:"New",prod:"Med Individual",prov:"Cigna",t:"C",u:8060},{w:2,b:"Aaron Pinto",div:"Aaron Pinto",m:"Jan",pt:"Renewal",prod:"Group Medical",prov:"Salama",t:"C",u:11709},{w:2,b:"Boyd Edmondson",div:"Boyd Edmondson",m:"Jan",pt:"New",prod:"General",prov:"Al Ain Ahlia",t:"C",u:9240},{w:4,b:"Sonny Ridgewell",div:"Sonny Ridgewell",m:"Jan",pt:"New",prod:"Group Medical",prov:"BUPA (Sukoon)",t:"A",u:69731},{w:4,b:"Boyd Edmondson",div:"Boyd Edmondson",m:"Jan",pt:"Renewal",prod:"Group Medical",prov:"BUPA (Sukoon)",t:"A",u:99618},{w:5,b:"Miro Fok",div:"Topsurance",m:"Jan",pt:"Renewal",prod:"Group Medical",prov:"April Insurance",t:"A",u:32134},{w:5,b:"Sonny Ridgewell",div:"Sonny Ridgewell",m:"Jan",pt:"New",prod:"Group Medical",prov:"MetLife",t:"A",u:64632},{w:5,b:"Miro Fok",div:"Topsurance",m:"Feb",pt:"Renewal",prod:"Group Medical",prov:"SAICO",t:"A",u:90299},{w:7,b:"Aaron Pinto",div:"Aaron Pinto",m:"Feb",pt:"Renewal",prod:"Group Medical",prov:"Allianz",t:"A",u:40919},{w:8,b:"Sooraj Thaha",div:"Direct",m:"Feb",pt:"Renewal",prod:"Group Medical",prov:"Hanse Merkur",t:"A",u:25863},{w:8,b:"Sonny Ridgewell",div:"Sonny Ridgewell",m:"Feb",pt:"New",prod:"Group Medical",prov:"Dubai Insurance",t:"B",u:23259},{w:8,b:"Sooraj Thaha",div:"Direct",m:"Feb",pt:"Renewal",prod:"Group Medical",prov:"Allianz",t:"B",u:20006},{w:9,b:"Miro Fok",div:"Topsurance",m:"Feb",pt:"Renewal",prod:"Group Medical",prov:"Cigna",t:"A",u:153798},{w:9,b:"Boyd Edmondson",div:"Boyd Edmondson",m:"Feb",pt:"Renewal",prod:"Group Medical",prov:"Cigna",t:"A",u:103696},{w:9,b:"Boyd Edmondson",div:"Boyd Edmondson",m:"Feb",pt:"Renewal",prod:"Group Medical",prov:"Cigna",t:"A",u:59081},{w:9,b:"Brett Staveley",div:"Brett Staveley",m:"Feb",pt:"New",prod:"Group Medical",prov:"HealthX",t:"A",u:61679},{w:10,b:"Individual Retention",div:"Topsurance",m:"Mar",pt:"Renewal",prod:"Group Medical",prov:"Allianz",t:"A",u:34031},{w:10,b:"Boyd Edmondson",div:"Boyd Edmondson",m:"Mar",pt:"New",prod:"General",prov:"Al Ain Ahlia",t:"A",u:49669},{w:11,b:"Miro Fok",div:"Topsurance",m:"Mar",pt:"Renewal",prod:"Group Medical",prov:"DNIRC",t:"A",u:31089},{w:11,b:"Stephen Maclaren",div:"Stephen Maclaren",m:"Mar",pt:"Renewal",prod:"Group Medical",prov:"Sukoon Insurance",t:"A",u:26006},{w:11,b:"Miro Fok",div:"Topsurance",m:"Mar",pt:"Renewal",prod:"Group Medical",prov:"Now Health",t:"A",u:79699},{w:6,b:"Sonny Ridgewell",div:"Sonny Ridgewell",m:"Feb",pt:"New",prod:"Group Medical",prov:"Cigna",t:"B",u:20048},{w:7,b:"Stephen Maclaren",div:"Stephen Maclaren",m:"Feb",pt:"Renewal",prod:"Group Medical",prov:"HealthX",t:"C",u:7972},{w:7,b:"Stephen Maclaren",div:"Stephen Maclaren",m:"Feb",pt:"Renewal",prod:"Group Medical",prov:"BUPA (Sukoon)",t:"C",u:5645},{w:9,b:"Miro Fok",div:"Topsurance",m:"Feb",pt:"Renewal",prod:"Group Medical",prov:"Cigna",t:"B",u:23925},{w:9,b:"Khaled Salem",div:"Khaled Salem",m:"Feb",pt:"New",prod:"Group Medical",prov:"Dubai Insurance",t:"C",u:10755},{w:11,b:"Oliver Bowen",div:"Oliver Bowen",m:"Mar",pt:"New",prod:"Group Medical",prov:"Daman",t:"B",u:17848},{w:11,b:"Boyd Edmondson",div:"Boyd Edmondson",m:"Mar",pt:"Renewal",prod:"Group Life",prov:"Zurich",t:"B",u:16861},{w:11,b:"Stephen Maclaren",div:"Stephen Maclaren",m:"Mar",pt:"Renewal",prod:"Group Medical",prov:"Dubai Insurance",t:"C",u:7050},{w:11,b:"Stephen Maclaren",div:"Stephen Maclaren",m:"Mar",pt:"Renewal",prod:"Group Medical",prov:"Dubai Insurance",t:"C",u:6022},{w:11,b:"Stephen Maclaren",div:"Stephen Maclaren",m:"Mar",pt:"Renewal",prod:"Group Medical",prov:"BUPA (Sukoon)",t:"C",u:6948},{w:11,b:"Sonia Divino",div:"Direct",m:"Mar",pt:"Renewal",prod:"Group Medical",prov:"MedGulf",t:"C",u:6996},{w:11,b:"Oliver Bowen",div:"Oliver Bowen",m:"Mar",pt:"New",prod:"Group Medical",prov:"Max Health",t:"C",u:6009}
 ];
@@ -151,11 +150,11 @@ const FALLBACK=[
 async function loadData(){
   document.querySelectorAll('.warn-banner').forEach(e=>e.remove());
 
-  // Always show dashboard INSTANTLY with cached data — zero spinner wait
+  // Always show dashboard INSTANTLY with cached data â zero spinner wait
   D = FALLBACK;
   document.getElementById('loadingScreen').style.display='none';
   document.getElementById('app').style.display='block';
-  document.getElementById('lastUpdated').textContent='⚠ Cached data (Mar 2026)';
+  document.getElementById('lastUpdated').textContent='â  Cached data (Mar 2026)';
   rebuildFilters();
   render();
   sendHeight();
@@ -167,18 +166,18 @@ async function loadData(){
     const json = await resp.json();
     D = json.records;
     const updated = new Date(json.updated);
-    document.getElementById('lastUpdated').textContent='Live · ' + updated.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('lastUpdated').textContent='Live Â· ' + updated.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
     document.querySelectorAll('.warn-banner').forEach(e=>e.remove());
     rebuildFilters();
     render();
   }catch(e){
-    // Live fetch failed — keep cached data, show small warning
-    document.getElementById('lastUpdated').textContent='⚠ Cached data (Mar 2026)';
+    // Live fetch failed â keep cached data, show small warning
+    document.getElementById('lastUpdated').textContent='â  Cached data (Mar 2026)';
     const warn=document.createElement('div');
     warn.className='warn-banner';
     warn.style.cssText='background:#fff8e8;border:1.5px solid #e8d88a;border-radius:10px;padding:8px 16px;margin-bottom:12px;font-size:11px;color:#7a5a0a;display:flex;justify-content:space-between;align-items:center;gap:12px';
-    warn.innerHTML=`<span>⚠ Showing cached data — live update failed. <small style="opacity:.6">${e.message}</small></span>
-      <button onclick="loadData()" style="padding:4px 12px;background:#b87214;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:11px;font-family:inherit">↻ Retry</button>`;
+    warn.innerHTML=`<span>â  Showing cached data â live update failed. <small style="opacity:.6">${e.message}</small></span>
+      <button onclick="loadData()" style="padding:4px 12px;background:#b87214;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:11px;font-family:inherit">â» Retry</button>`;
     document.getElementById('app').insertBefore(warn,document.getElementById('app').firstChild);
   }
   sendHeight();
@@ -236,7 +235,7 @@ function rebuildFilters(){
   });
   dSel.onchange=()=>{state.deal=dSel.value;render();};
   const tabEl=document.getElementById('tabs');
-  [{id:'broker',icon:'📊',lbl:'By Broker'},{id:'trend',icon:'📈',lbl:'Weekly Trend'},{id:'flow',icon:'🔀',lbl:'Flow Chart'},{id:'table',icon:'🗂',lbl:'Deal Table'}].forEach(t=>{
+  [{id:'broker',icon:'ð',lbl:'By Broker'},{id:'trend',icon:'ð',lbl:'Weekly Trend'},{id:'flow',icon:'ð',lbl:'Flow Chart'},{id:'table',icon:'ð',lbl:'Deal Table'}].forEach(t=>{
     const b=document.createElement('button');
     b.className='tab'+(state.tab===t.id?' active':''); b.innerHTML=t.icon+' '+t.lbl;
     b.onclick=()=>{state.tab=t.id;render();}; tabEl.appendChild(b);
@@ -292,7 +291,7 @@ function renderBroker(d,panel){
       const closed=col[div.name]!==false;
       const brows=Object.entries(div.b).map(([b,v])=>({name:b,n:v.n,r:v.r,t:v.n+v.r})).sort((a,b)=>b.t-a.t).filter(b=>b.t>0);
       const hc=brows.length>1||(brows.length===1&&brows[0].name!==div.name);
-      const icon=hc?(closed?'⊕':'⊖'):'';
+      const icon=hc?(closed?'â':'â'):'';
       return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px;cursor:pointer;border-radius:6px;padding:3px 4px;background:${closed?'':'#f8fdf8'}" onclick="window.__td('${div.name.replace(/'/g,"\\'")}')">
         <span style="width:14px;font-size:13px;color:#0d5c2e;flex-shrink:0;text-align:center">${icon}</span>
         <span style="width:116px;font-size:12px;font-weight:600;text-align:right;color:#1a2e1a;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${div.name}</span>
