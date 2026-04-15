@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seven Insurance — IA Life Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f0f2f8;color:#1a1e2e}
+.db{padding:16px}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.header-title{font-size:18px;font-weight:700;color:#1a1e2e;letter-spacing:-.3px}
+.header-sub{font-size:11px;color:#6a72a0;margin-top:2px}
+.spinner{width:36px;height:36px;border:3px solid #c8ccdc;border-top-color:#2a3eb0;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.kpi{background:#fff;border-radius:12px;border:1.5px solid #c8ccdc;padding:16px 20px}
+.kpi-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#6a72a0;margin-bottom:6px}
+.kpi-val{font-size:24px;font-weight:700;letter-spacing:-.5px}
+.kpi-sub{font-size:11px;color:#8a92b0;margin-top:3px}
+.filters{background:#fff;border-radius:12px;border:1.5px solid #c8ccdc;padding:14px 18px;margin-bottom:14px}
+.f-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#6a72a0}
+.f-row{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-top:10px}
+.f-group{display:flex;flex-direction:column;gap:5px}
+.f-label{font-size:10px;color:#8a92b0;font-weight:600;letter-spacing:.05em}
+.btn-group{display:flex;gap:4px;flex-wrap:wrap}
+.btn{padding:5px 13px;border-radius:20px;border:1.5px solid #c8ccdc;background:#f4f6ff;font-size:12px;cursor:pointer;color:#2a3a6a;transition:all .15s;font-family:inherit}
+.btn:hover{background:#e4e8ff}
+.btn.active{background:#2a3eb0;color:#fff;border-color:#2a3eb0}
+select{padding:5px 10px;border-radius:8px;border:1.5px solid #c8ccdc;font-size:12px;background:#f4f6ff;color:#2a3a6a;cursor:pointer;outline:none;font-family:inherit;min-width:140px}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:8px 16px;border-radius:10px;border:1.5px solid #c8ccdc;background:#fff;font-size:12px;font-weight:600;cursor:pointer;color:#2a3a6a;display:flex;align-items:center;gap:5px;transition:all .15s;font-family:inherit}
+.tab:hover{background:#e4e8ff}
+.tab.active{background:#2a3eb0;color:#fff;border-color:#2a3eb0}
+.panel{background:#fff;border-radius:12px;border:1.5px solid #c8ccdc;padding:18px 20px;min-height:200px}
+.legend{display:flex;gap:16px;margin-bottom:12px;font-size:11px;color:#6a72a0;flex-wrap:wrap}
+.leg-dot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle}
+.no-data{text-align:center;padding:40px;color:#8a92b0;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 10px;border-bottom:2px solid #e0e4f0;color:#6a72a0;font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;cursor:pointer}
+td{padding:7px 10px;border-bottom:1px solid #f0f2f8;color:#2a3a6a}
+tr:hover td{background:#f4f6ff}
+.badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600}
+.bg-team{background:#e8ecff;color:#2a3eb0}
+.top-bar{display:flex;align-items:center;justify-content:space-between}
+.refresh-btn{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:8px;border:1.5px solid #c8ccdc;background:#f4f6ff;font-size:11px;cursor:pointer;color:#6a72a0;font-family:inherit;transition:all .15s}
+.refresh-btn:hover{background:#e4e8ff;color:#2a3eb0}
+.ts{font-size:10px;color:#8a92b0}
+.group-hdr{background:#f4f6ff;font-weight:700;font-size:11px;color:#2a3eb0;padding:6px 10px;border-radius:6px;margin:12px 0 4px;letter-spacing:.04em;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div class="db">
+  <div class="header">
+    <div>
+      <div class="header-title">IA Life — Invoicing & Revenue</div>
+      <div class="header-sub">Seven Insurance Brokers LLC · Life Division · 2026</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="ts" id="lastUpdated">Loading…</span>
+      <button class="refresh-btn" id="refreshBtn" onclick="loadData()">↻ Refresh</button>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-label">Total Invoicing (YTD)</div><div class="kpi-val" id="k1" style="color:#1a4e8e">—</div><div class="kpi-sub" id="k1s"></div></div>
+    <div class="kpi"><div class="kpi-label">Total Revenue (YTD)</div><div class="kpi-val" id="k2" style="color:#0d5c2e">—</div><div class="kpi-sub" id="k2s"></div></div>
+    <div class="kpi"><div class="kpi-label">Brokers / Teams</div><div class="kpi-val" id="k3" style="color:#2a3eb0">—</div><div class="kpi-sub" id="k3s"></div></div>
+  </div>
+
+  <div class="filters">
+    <div class="top-bar"><div class="f-title">Filters</div></div>
+    <div class="f-row">
+      <div class="f-group"><div class="f-label">Period</div><div class="btn-group" id="wkFilters"></div></div>
+      <div class="f-group"><div class="f-label">Team</div><select id="teamSel"></select></div>
+      <div class="f-group"><div class="f-label">Broker</div><select id="brokerSel"></select></div>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="panel" id="panel"></div>
+</div>
+
+<script>
+function sendHeight(){window.parent.postMessage({type:"resize",height:document.body.scrollHeight},"*");}
+window.addEventListener("load",sendHeight);
+window.addEventListener("resize",sendHeight);
+
+const SP_SITE='https://seveninsurancebrokers.sharepoint.com/sites/SIBIntranet';
+// IA Life Excel — update this path/link when file is on SharePoint
+const IA_SHARE_LINK='';
+
+let chartInst=null;
+let state={week:'All',team:'All',broker:'All',tab:'invoicing'};
+const fmtN=v=>{if(v==null)return'—';const neg=v<0;const s='$'+(Math.abs(v)>=1e6?(Math.abs(v)/1e6).toFixed(2)+'M':Math.abs(v)>=1e3?Math.round(Math.abs(v)/1e3)+'K':Math.round(Math.abs(v)).toLocaleString());return neg?'('+s+')':s;};
+
+// ── IA Life Data — Week 15 snapshot (col36=Invoicing, col39=Net Revenue, per-wk cols 2,7,12,17,22) ──
+// Teams: Alpha, APW, Prinden, PB, SVN Capital, Joe Barnaby, Abacus, Individual, Akhil
+const IA_DATA=[
+  // ALPHA TEAM
+  {broker:"Frank Hutchinson",team:"Alpha",wkInv:{1:1251,2:1000,3:0,4:0,5:0},wkRev:{1:1251,2:1000,3:0,4:0,5:0},inv:1000,rev:19776},
+  {broker:"Barry Goertz",team:"Alpha",wkInv:{1:185,2:0,3:0,4:0,5:0},wkRev:{1:185,2:0,3:0,4:0,5:0},inv:1758,rev:21586},
+  {broker:"Julian Stanley",team:"Alpha",wkInv:{1:1077,2:0,3:0,4:0,5:0},wkRev:{1:1077,2:0,3:0,4:0,5:0},inv:1703,rev:5388},
+  {broker:"Paul McCullagh",team:"Alpha",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:1683},
+  {broker:"Alpha Others",team:"Alpha",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:281,rev:5612},
+  // APW TEAM
+  {broker:"Phillip Mayers",team:"APW",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:0},
+  {broker:"James McMullan",team:"APW",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:0},
+  {broker:"Ben Bolger",team:"APW",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:0},
+  {broker:"Jamie Skinner",team:"APW",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:0},
+  {broker:"Rodel Balidio (APW)",team:"APW",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:0},
+  // PRINDEN
+  {broker:"James Prince",team:"Prinden",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:2772,rev:42840},
+  {broker:"Jonathan Getliffe",team:"Prinden",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:8923,rev:15965},
+  {broker:"Sam Jenkins",team:"Prinden",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:2330},
+  // PB TEAM
+  {broker:"Ben Buckley",team:"PB Team",wkInv:{1:87,2:479,3:0,4:0,5:0},wkRev:{1:87,2:479,3:0,4:0,5:0},inv:0,rev:2122},
+  {broker:"Paul Baker",team:"PB Team",wkInv:{1:381,2:4097,3:0,4:0,5:0},wkRev:{1:381,2:4097,3:0,4:0,5:0},inv:8806,rev:15602},
+  {broker:"PB Others",team:"PB Team",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:574},
+  // SVN CAPITAL
+  {broker:"Stefan Terry",team:"SVN Capital",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:6180,rev:25271},
+  {broker:"Aman Moti",team:"SVN Capital",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:4525},
+  {broker:"Andrew Mackenzie",team:"SVN Capital",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:1389},
+  {broker:"Antoni Jackson",team:"SVN Capital",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:547},
+  {broker:"Bob Bhowmik",team:"SVN Capital",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:3717,rev:8968},
+  {broker:"Brian Wolf",team:"SVN Capital",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:6090},
+  {broker:"Craig O'Sullivan",team:"SVN Capital",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:1339},
+  {broker:"James Marks",team:"SVN Capital",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:1400,rev:4909},
+  {broker:"James McGill",team:"SVN Capital",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:10930},
+  {broker:"Lydia Andrews",team:"SVN Capital",wkInv:{1:14,2:0,3:0,4:0,5:0},wkRev:{1:14,2:0,3:0,4:0,5:0},inv:2263,rev:4057},
+  {broker:"Stuart Mizen",team:"SVN Capital",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:5982},
+  {broker:"Yasmine Abou Elnasr",team:"SVN Capital",wkInv:{1:61,2:1678,3:0,4:0,5:0},wkRev:{1:61,2:1678,3:0,4:0,5:0},inv:0,rev:8086},
+  {broker:"Nial Antonio",team:"SVN Capital",wkInv:{1:0,2:257,3:0,4:0,5:0},wkRev:{1:0,2:257,3:0,4:0,5:0},inv:0,rev:1124},
+  {broker:"Mohamad Mrad",team:"SVN Capital",wkInv:{1:33,2:0,3:0,4:0,5:0},wkRev:{1:33,2:0,3:0,4:0,5:0},inv:0,rev:327},
+  {broker:"Norman Lowe",team:"SVN Capital",wkInv:{1:25,2:4,3:0,4:0,5:0},wkRev:{1:25,2:4,3:0,4:0,5:0},inv:0,rev:116},
+  {broker:"SVN Others",team:"SVN Capital",wkInv:{1:0,2:28,3:0,4:0,5:0},wkRev:{1:0,2:28,3:0,4:0,5:0},inv:0,rev:309},
+  // JOE BARNABY
+  {broker:"Joe Barnaby",team:"Joe Barnaby",wkInv:{1:0,2:1317,3:0,4:0,5:0},wkRev:{1:0,2:1317,3:0,4:0,5:0},inv:0,rev:23578},
+  {broker:"Sabina Notargiacomo",team:"Joe Barnaby",wkInv:{1:116,2:737,3:0,4:0,5:0},wkRev:{1:116,2:737,3:0,4:0,5:0},inv:0,rev:8481},
+  // ABACUS
+  {broker:"Abacus (Life)",team:"Abacus",wkInv:{1:7620,2:0,3:0,4:0,5:0},wkRev:{1:7620,2:0,3:0,4:0,5:0},inv:17805,rev:34938},
+  {broker:"Brett Staveley (Abacus)",team:"Abacus",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:1868,rev:1868},
+  // INDIVIDUAL TEAM
+  {broker:"AHR",team:"Individual",wkInv:{1:3785,2:14047,3:0,4:0,5:0},wkRev:{1:3785,2:14047,3:0,4:0,5:0},inv:30505,rev:190456},
+  {broker:"APW Team (Individual)",team:"Individual",wkInv:{1:10136,2:0,3:0,4:0,5:0},wkRev:{1:10136,2:0,3:0,4:0,5:0},inv:-255,rev:43707},
+  {broker:"Roger Campaner",team:"Individual",wkInv:{1:0,2:292,3:0,4:0,5:0},wkRev:{1:0,2:292,3:0,4:0,5:0},inv:6907,rev:13082},
+  {broker:"Shaileey Team",team:"Individual",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:7334},
+  {broker:"Rodel Balidio (Ind)",team:"Individual",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:7223,rev:6693},
+  {broker:"Black Tower",team:"Individual",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:6782},
+  {broker:"Wentworth",team:"Individual",wkInv:{1:0,2:8920,3:0,4:0,5:0},wkRev:{1:0,2:8920,3:0,4:0,5:0},inv:8690,rev:9570},
+  {broker:"Others (Individual)",team:"Individual",wkInv:{1:0,2:1646,3:0,4:0,5:0},wkRev:{1:0,2:1646,3:0,4:0,5:0},inv:213,rev:14265},
+  {broker:"Indigo",team:"Individual",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:-596,rev:-518},
+  {broker:"ARIA",team:"Individual",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:439},
+  {broker:"Eoin Mullally",team:"Individual",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:257},
+  // AKHIL TEAM
+  {broker:"Akhil Purohit",team:"Akhil",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:3852,rev:10520},
+  {broker:"Champika Eardly",team:"Akhil",wkInv:{1:2069,2:0,3:0,4:0,5:0},wkRev:{1:2069,2:0,3:0,4:0,5:0},inv:9012,rev:15244},
+  {broker:"Akhil Others",team:"Akhil",wkInv:{1:0,2:0,3:0,4:0,5:0},wkRev:{1:0,2:0,3:0,4:0,5:0},inv:0,rev:313}
+];
+
+const TEAMS=['All',...Array.from(new Set(IA_DATA.map(r=>r.team))).sort()];
+
+function getVal(r,key,wk){
+  if(wk==='All') return r[key];
+  const n=parseInt(wk);
+  return key==='inv'?(r.wkInv[n]||0):(r.wkRev[n]||0);
+}
+
+function filtered(){
+  return IA_DATA.filter(r=>{
+    if(state.team!=='All'&&r.team!==state.team)return false;
+    if(state.broker!=='All'&&r.broker!==state.broker)return false;
+    return true;
+  });
+}
+
+function rebuildFilters(){
+  const wkEl=document.getElementById('wkFilters');
+  wkEl.innerHTML='';
+  ['All','1','2','3','4','5'].forEach(w=>{
+    const b=document.createElement('button');
+    b.className='btn'+(state.week===w?' active':'');
+    b.textContent=w==='All'?'Full YTD':'Wk '+w;
+    b.onclick=()=>{state.week=w;render();};
+    wkEl.appendChild(b);
+  });
+
+  const tSel=document.getElementById('teamSel');
+  tSel.innerHTML=TEAMS.map(t=>`<option value="${t}"${t===state.team?' selected':''}>${t==='All'?'All Teams':t}</option>`).join('');
+  tSel.onchange=()=>{state.team=tSel.value;state.broker='All';rebuildFilters();render();};
+
+  const bSel=document.getElementById('brokerSel');
+  const brokers=['All',...Array.from(new Set(filtered().map(r=>r.broker))).sort()];
+  bSel.innerHTML=brokers.map(b=>`<option value="${b}"${b===state.broker?' selected':''}>${b==='All'?'All Brokers':b}</option>`).join('');
+  bSel.onchange=()=>{state.broker=bSel.value;render();};
+
+  const tabEl=document.getElementById('tabs');
+  tabEl.innerHTML='';
+  [{id:'invoicing',icon:'🧾',lbl:'Invoicing'},{id:'revenue',icon:'💰',lbl:'Revenue'},{id:'both',icon:'📊',lbl:'Both'},{id:'table',icon:'🗂',lbl:'Full Table'}].forEach(t=>{
+    const b=document.createElement('button');
+    b.className='tab'+(state.tab===t.id?' active':'');
+    b.innerHTML=t.icon+' '+t.lbl;
+    b.onclick=()=>{state.tab=t.id;render();};
+    tabEl.appendChild(b);
+  });
+}
+
+function render(){
+  document.querySelectorAll('#wkFilters .btn').forEach(b=>b.classList.toggle('active',b.textContent===(state.week==='All'?'Full YTD':'Wk '+state.week)));
+  document.querySelectorAll('.tab').forEach(b=>{
+    const id=b.innerHTML.includes('Invoicing')?'invoicing':b.innerHTML.includes('Revenue')?'revenue':b.innerHTML.includes('Both')?'both':'table';
+    b.classList.toggle('active',id===state.tab);
+  });
+
+  const rows=filtered();
+  const totalInv=rows.reduce((s,r)=>s+(getVal(r,'inv',state.week)||0),0);
+  const totalRev=rows.reduce((s,r)=>s+(getVal(r,'rev',state.week)||0),0);
+  const active=rows.filter(r=>(getVal(r,'inv',state.week)||0)!==0||(getVal(r,'rev',state.week)||0)!==0).length;
+
+  document.getElementById('k1').textContent=fmtN(totalInv);
+  document.getElementById('k1s').textContent=state.week==='All'?'Year to date':'Week '+state.week+' only';
+  document.getElementById('k2').textContent=fmtN(totalRev);
+  document.getElementById('k2s').textContent='Net: Issued + Trails − Clawbacks';
+  document.getElementById('k3').textContent=active;
+  document.getElementById('k3s').textContent='of '+rows.length+' brokers active this period';
+
+  if(chartInst){chartInst.destroy();chartInst=null;}
+  const panel=document.getElementById('panel');
+  if(state.tab==='invoicing') renderBars(rows,'inv',panel);
+  else if(state.tab==='revenue') renderBars(rows,'rev',panel);
+  else if(state.tab==='both') renderBoth(rows,panel);
+  else renderTable(rows,panel);
+  sendHeight();
+}
+
+function renderBars(rows,key,panel){
+  const isInv=key==='inv';
+  const color=isInv?'#1a4e8e':'#0d5c2e';
+  const label=isInv?'Invoicing (Issued Cases Gross)':'Revenue (Net: Issued+Trails−Clawbacks)';
+
+  const sorted=[...rows].sort((a,b)=>(getVal(b,key,state.week)||0)-(getVal(a,key,state.week)||0));
+  const maxV=Math.max(...sorted.map(r=>Math.abs(getVal(r,key,state.week)||0)),1);
+
+  // Weekly trend
+  const wkTotals=[1,2,3,4,5].map(w=>rows.reduce((s,r)=>s+(getVal(r,key,String(w))||0),0));
+  const wkLabels=['Wk 1','Wk 2','Wk 3','Wk 4','Wk 5'];
+
+  // Group by team
+  const teamOrder=['Alpha','APW','Prinden','PB Team','SVN Capital','Joe Barnaby','Abacus','Individual','Akhil'];
+  const byTeam={};
+  sorted.forEach(r=>{if(!byTeam[r.team])byTeam[r.team]=[];byTeam[r.team].push(r);});
+
+  const barHtml=teamOrder.filter(t=>byTeam[t]).map(t=>{
+    const tRows=byTeam[t];
+    const tTotal=tRows.reduce((s,r)=>s+(getVal(r,key,state.week)||0),0);
+    const rows=tRows.map(r=>{
+      const v=getVal(r,key,state.week)||0;
+      const neg=v<0;
+      const pct=(Math.abs(v)/maxV*100).toFixed(1);
+      return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;padding:2px 3px;border-radius:5px" onmouseover="this.style.background='#f0f4ff'" onmouseout="this.style.background=''">
+        <span style="width:160px;font-size:11px;text-align:right;color:#2a3a6a;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.broker}</span>
+        <div style="flex:1;height:20px;background:#f0f2f8;border-radius:5px;overflow:hidden">
+          <div style="background:${neg?'#c03030':color};height:100%;width:${pct}%;min-width:${v!==0?'2px':'0'}"></div>
+        </div>
+        <span style="font-size:11px;font-weight:600;color:${neg?'#a03030':color};width:80px;text-align:right;flex-shrink:0">${fmtN(v)}</span>
+      </div>`;
+    }).join('');
+    return `<div class="group-hdr">${t} — ${fmtN(tTotal)}</div>${rows}`;
+  }).join('');
+
+  panel.innerHTML=`
+    <div class="legend"><span><span class="leg-dot" style="background:${color}"></span>${label}</span></div>
+    <div style="margin-bottom:16px">${barHtml||'<div class="no-data">No data</div>'}</div>
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#6a72a0;margin-bottom:8px">Weekly trend</div>
+    <div style="position:relative;width:100%;height:150px"><canvas id="iaChart"></canvas></div>
+  `;
+
+  setTimeout(()=>{
+    const ctx=document.getElementById('iaChart');if(!ctx)return;
+    chartInst=new Chart(ctx,{type:'bar',data:{labels:wkLabels,datasets:[{label,data:wkTotals,backgroundColor:wkTotals.map(v=>v<0?'#c03030':color),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>label+': '+fmtN(c.parsed.y)}}},scales:{x:{grid:{display:false},ticks:{font:{size:11},color:'#6a72a0'}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},color:'#6a72a0',callback:v=>fmtN(v)}}}}});
+    sendHeight();
+  },50);
+}
+
+function renderBoth(rows,panel){
+  const teamOrder=['Alpha','APW','Prinden','PB Team','SVN Capital','Joe Barnaby','Abacus','Individual','Akhil'];
+  const byTeam={};
+  rows.forEach(r=>{if(!byTeam[r.team])byTeam[r.team]=[];byTeam[r.team].push(r);});
+
+  const maxV=Math.max(...rows.map(r=>Math.max(Math.abs(getVal(r,'inv',state.week)||0),Math.abs(getVal(r,'rev',state.week)||0))),1);
+
+  const html=teamOrder.filter(t=>byTeam[t]).map(t=>{
+    const tRows=byTeam[t];
+    const tInv=tRows.reduce((s,r)=>s+(getVal(r,'inv',state.week)||0),0);
+    const tRev=tRows.reduce((s,r)=>s+(getVal(r,'rev',state.week)||0),0);
+    const rowHtml=tRows.map(r=>{
+      const inv=getVal(r,'inv',state.week)||0;
+      const rev=getVal(r,'rev',state.week)||0;
+      if(inv===0&&rev===0)return '';
+      const iPct=(Math.abs(inv)/maxV*100).toFixed(1);
+      const rPct=(Math.abs(rev)/maxV*100).toFixed(1);
+      return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;padding:2px 3px;border-radius:5px" onmouseover="this.style.background='#f0f4ff'" onmouseout="this.style.background=''">
+        <span style="width:150px;font-size:11px;text-align:right;color:#2a3a6a;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.broker}</span>
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+          <div style="height:10px;background:#f0f2f8;border-radius:3px;overflow:hidden"><div style="background:#1a4e8e;height:100%;width:${iPct}%"></div></div>
+          <div style="height:10px;background:#f0f2f8;border-radius:3px;overflow:hidden"><div style="background:#0d5c2e;height:100%;width:${rPct}%"></div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;width:80px;flex-shrink:0;text-align:right">
+          <span style="font-size:10px;color:#1a4e8e;font-weight:600">${fmtN(inv)}</span>
+          <span style="font-size:10px;color:#0d5c2e;font-weight:600">${fmtN(rev)}</span>
+        </div>
+      </div>`;
+    }).join('');
+    if(!rowHtml.trim())return '';
+    return `<div class="group-hdr">${t} · Inv: ${fmtN(tInv)} / Rev: ${fmtN(tRev)}</div>${rowHtml}`;
+  }).join('');
+
+  panel.innerHTML=`
+    <div class="legend">
+      <span><span class="leg-dot" style="background:#1a4e8e"></span>Invoicing</span>
+      <span><span class="leg-dot" style="background:#0d5c2e"></span>Revenue</span>
+    </div>
+    ${html||'<div class="no-data">No data</div>'}
+  `;
+}
+
+function renderTable(rows,panel){
+  const sorted=[...rows].sort((a,b)=>(getVal(b,'rev',state.week)||0)-(getVal(a,'rev',state.week)||0));
+  const wkCols=[1,2,3,4,5];
+  panel.innerHTML=`<div style="overflow-x:auto"><table>
+    <thead>
+      <tr>
+        <th>Team</th><th>Broker</th>
+        ${wkCols.map(w=>`<th style="text-align:right">Wk${w} Inv</th><th style="text-align:right">Wk${w} Rev</th>`).join('')}
+        <th style="text-align:right">YTD Invoicing</th>
+        <th style="text-align:right">YTD Revenue</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${sorted.map(r=>`<tr>
+        <td><span class="badge bg-team">${r.team}</span></td>
+        <td style="font-weight:600">${r.broker}</td>
+        ${wkCols.map(w=>`<td style="text-align:right;font-size:11px;color:#1a4e8e">${r.wkInv[w]?fmtN(r.wkInv[w]):'—'}</td><td style="text-align:right;font-size:11px;color:#0d5c2e">${r.wkRev[w]?fmtN(r.wkRev[w]):'—'}</td>`).join('')}
+        <td style="text-align:right;font-weight:700;color:#1a4e8e">${fmtN(r.inv)}</td>
+        <td style="text-align:right;font-weight:700;color:#0d5c2e">${fmtN(r.rev)}</td>
+      </tr>`).join('')}
+    </tbody>
+    <tfoot>
+      <tr style="background:#f0f4ff;border-top:2px solid #c8ccdc;font-weight:700">
+        <td colspan="2" style="padding:8px 10px;color:#2a3eb0">Total</td>
+        ${wkCols.map(w=>`<td style="text-align:right;color:#1a4e8e;padding:8px 10px">${fmtN(rows.reduce((s,r)=>s+(r.wkInv[w]||0),0))}</td><td style="text-align:right;color:#0d5c2e;padding:8px 10px">${fmtN(rows.reduce((s,r)=>s+(r.wkRev[w]||0),0))}</td>`).join('')}
+        <td style="text-align:right;color:#1a4e8e;padding:8px 10px">${fmtN(rows.reduce((s,r)=>s+(r.inv||0),0))}</td>
+        <td style="text-align:right;color:#0d5c2e;padding:8px 10px">${fmtN(rows.reduce((s,r)=>s+(r.rev||0),0))}</td>
+      </tr>
+    </tfoot>
+  </table></div>`;
+}
+
+function loadData(){
+  document.getElementById('lastUpdated').textContent='⚠ Cached data (Wk 15)';
+  rebuildFilters();
+  render();
+  sendHeight();
+}
+
+loadData();
+</script>
+</body>
+</html>
