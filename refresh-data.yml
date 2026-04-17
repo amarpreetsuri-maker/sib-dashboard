@@ -2,7 +2,7 @@ name: Refresh Dashboard Data
 
 on:
   schedule:
-    - cron: '*/30 * * * *'   # every 30 minutes
+    - cron: '0 */4 * * *'   # every 4 hours
   workflow_dispatch:          # allow manual trigger from Actions tab
 
 jobs:
