@@ -1,7 +1,6 @@
 name: Refresh Dashboard Data
-
 on:
-schedule:
+  schedule:
     - cron: '0 */4 * * *'   # every 4 hours
   workflow_dispatch:          # allow manual trigger from Actions tab
 
@@ -10,24 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
       - name: Install dependencies
         run: npm install xlsx node-fetch
-
       - name: Fetch data from SharePoint
         env:
           TENANT_ID:     ${{ secrets.TENANT_ID }}
           CLIENT_ID:     ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         run: node fetch-data.js
-
       - name: Commit updated data.json
         run: |
           git config user.name  "github-actions[bot]"
