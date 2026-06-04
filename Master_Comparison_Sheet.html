@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seven Insurance — Master Benefit Comparison</title>
+<style>
+/* ══ TOKENS (GIM palette) ══ */
+:root{
+  --g1:#0d5c2e;--g2:#1a6e3a;--g3:#4CAF80;--g4:#e8f4ee;--g5:#c8dcc8;
+  --g6:#f0f4f0;--g7:#f8fbf8;--g8:#e8f4e8;
+  --b1:#1a4a6e;--b2:#e8f0f4;
+  --tx:#1a2e1a;--tx2:#2a4a2a;--tx3:#5a7a5a;--tx4:#7a9a7a;
+  --warn:#fff8e8;--warnb:#e8d88a;--warnt:#7a5a0a;
+  --r:10px;--rs:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--g6);color:var(--tx);font-size:13px;min-height:100vh}
+
+/* ══ HEADER ══ */
+.hdr{background:#fff;border-bottom:2px solid var(--g5);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.hdr-brand{display:flex;align-items:center;gap:10px}
+.hdr-logo{width:32px;height:32px;background:var(--g1);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.hdr-title{font-size:15px;font-weight:700;color:var(--g1)}
+.hdr-sub{font-size:11px;color:var(--tx3);margin-top:1px}
+
+/* ══ NAV TABS ══ */
+.nav{display:flex;gap:4px}
+.nav-tab{padding:7px 15px;border-radius:20px;border:1.5px solid var(--g5);background:var(--g7);font-size:12px;font-weight:600;cursor:pointer;color:var(--tx2);transition:all .15s;font-family:inherit;white-space:nowrap}
+.nav-tab:hover{background:var(--g8)}
+.nav-tab.active{background:var(--g1);color:#fff;border-color:var(--g1)}
+
+/* ══ MAIN WRAP ══ */
+.main{padding:16px 20px}
+
+/* ══ FILTER BAR ══ */
+.fbar{background:#fff;border:1.5px solid var(--g5);border-radius:var(--r);padding:12px 16px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3)}
+select,input[type=text]{padding:5px 9px;border-radius:var(--rs);border:1.5px solid var(--g5);font-size:12px;background:var(--g7);color:var(--tx2);outline:none;font-family:inherit;min-width:130px}
+select:focus,input:focus{border-color:var(--g1)}
+.btn{padding:5px 13px;border-radius:20px;border:1.5px solid var(--g5);background:var(--g7);font-size:12px;cursor:pointer;color:var(--tx2);transition:all .15s;font-family:inherit}
+.btn:hover{background:var(--g8)}
+.btn.active{background:var(--g1);color:#fff;border-color:var(--g1)}
+.pill-count{background:var(--g1);color:#fff;border-radius:999px;font-size:11px;padding:2px 9px;font-weight:700;align-self:flex-end}
+.reset{background:var(--g7);border:1.5px solid var(--g5);color:var(--tx3);padding:5px 12px;border-radius:var(--rs);cursor:pointer;font-size:12px;font-family:inherit;align-self:flex-end}
+.reset:hover{border-color:var(--g1);color:var(--g1)}
+
+/* ══ INSURER PILLS ══ */
+.ins-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.ins-pill{padding:4px 12px;border-radius:999px;border:1.5px solid var(--g5);background:#fff;color:var(--tx3);cursor:pointer;font-size:12px;font-weight:600;transition:all .15s}
+.ins-pill.on{border-color:var(--g1);background:rgba(13,92,46,.1);color:var(--g1)}
+.ins-pill:hover:not(.on){border-color:var(--tx4);color:var(--tx)}
+
+/* ══ TABLE WRAPPER ══ */
+.tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1.5px solid var(--g5);background:#fff}
+table{border-collapse:collapse;width:100%}
+th{background:#fff;padding:9px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3);border-bottom:2px solid var(--g5);white-space:nowrap;position:sticky;top:57px;z-index:10}
+th.plan-col{text-align:center;min-width:150px;max-width:200px;font-size:10px;font-weight:500;color:var(--tx2);text-transform:none;letter-spacing:0}
+th.ins-group{background:rgba(13,92,46,.07);color:var(--g1);font-size:11px;text-align:center;text-transform:none;letter-spacing:0;padding:7px 11px}
+td{padding:8px 11px;border-bottom:1px solid var(--g6);vertical-align:top}
+td.row-label{font-weight:600;color:var(--tx);white-space:nowrap;min-width:230px;position:sticky;left:0;background:#fff;z-index:5;border-right:1.5px solid var(--g5)}
+td.val{text-align:center;font-size:12px;color:var(--tx3);max-width:200px;line-height:1.5}
+tr:hover td{background:#fafef8}
+tr:hover td.row-label{background:#fafef8}
+.sec-hdr td{background:rgba(13,92,46,.06);font-weight:800;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--g1);padding:7px 11px;border-bottom:1.5px solid var(--g5)}
+.covered{color:var(--g1);font-weight:700}
+.not-covered{color:#c0392b;font-weight:600}
+.partial{color:#b87214;font-weight:600}
+.empty-cell{color:#d0d8d0;font-size:16px}
+
+/* ══ NETWORK LEGEND ══ */
+.net-legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:12px;font-size:11px;color:var(--tx3);background:#fff;border:1.5px solid var(--g5);border-radius:var(--r);padding:10px 14px}
+.leg-item{display:flex;align-items:center;gap:6px}
+.leg-dot{width:20px;height:20px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ld-full{background:var(--g4);color:var(--g1)}
+.ld-copay{background:#fef8e8;color:#b87214}
+.ld-ip{background:var(--b2);color:var(--b1)}
+.ld-none{background:#fef0f0;color:#c0392b}
+
+/* ══ NETWORK TABLE ══ */
+.net-tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1.5px solid var(--g5)}
+.net-tbl-wrap table{min-width:900px}
+th.net-ins{background:rgba(13,92,46,.08);color:var(--g1);font-size:10px;text-align:center;padding:6px 8px;text-transform:none;letter-spacing:0}
+th.net-plan{font-size:10px;padding:6px 8px;min-width:90px;text-align:center;font-weight:500;color:var(--tx2);text-transform:none;letter-spacing:0}
+th.net-tpa{font-size:9px;padding:4px 8px;text-align:center;color:var(--tx4);text-transform:none;letter-spacing:0;font-weight:400}
+td.hosp-name{font-weight:600;white-space:nowrap;min-width:220px;position:sticky;left:0;background:#fff;border-right:1.5px solid var(--g5);z-index:5}
+td.hosp-loc{color:var(--tx3);font-size:11px;white-space:nowrap;padding-right:12px}
+td.net-cell{text-align:center;padding:7px 5px;font-size:14px}
+td.net-full{background:rgba(232,244,238,.5)}
+td.net-copay{background:rgba(254,248,232,.6)}
+td.net-ip{background:rgba(232,240,244,.5)}
+td.net-none{background:rgba(254,240,240,.3)}
+
+/* ══ PREMIUM ══ */
+.prem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.pcard{background:#fff;border:1.5px solid var(--g5);border-radius:var(--r);overflow:hidden}
+.pcard-hdr{background:rgba(13,92,46,.07);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid var(--g5)}
+.pcard-hdr h3{font-size:14px;font-weight:700;color:var(--g1)}
+.pbadge{background:var(--g1);color:#fff;border-radius:999px;font-size:11px;padding:2px 10px;font-weight:700}
+.pcard-body{padding:12px 14px}
+.prow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--g6);font-size:12px}
+.prow:last-child{border:none}
+.plabel{color:var(--tx3)}
+.pright{display:flex;align-items:center;gap:6px}
+.mem-in,.prem-in{background:var(--g7);border:1.5px solid var(--g5);border-radius:5px;color:var(--tx);padding:3px 7px;font-size:12px;font-family:inherit;text-align:right}
+.mem-in{width:55px}
+.prem-in{width:95px}
+.mem-in:focus,.prem-in:focus{border-color:var(--g1);outline:none}
+.ptotals{margin-top:10px;background:rgba(13,92,46,.08);border-radius:var(--rs);padding:9px 12px}
+.ptotals .prow{border:none;padding:3px 0}
+.ptot-label{font-weight:700;color:var(--g1)}
+.ptot-val{font-weight:800;color:var(--g1)}
+
+/* ══ CAT A BUILDER ══ */
+.catA-wrap{background:#fff;border:1.5px solid var(--g5);border-radius:var(--r);overflow:hidden}
+.catA-toolbar{padding:12px 16px;border-bottom:1.5px solid var(--g5);display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:rgba(13,92,46,.04)}
+.catA-toolbar label{font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em}
+.export-btn{background:var(--g1);color:#fff;border:none;border-radius:var(--rs);padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600}
+.export-btn:hover{background:var(--g2)}
+.catA-tbl-wrap{overflow-x:auto}
+.catA-tbl-wrap table{min-width:800px}
+.catA-tbl-wrap th.slot-hdr{text-align:center;min-width:160px;padding:0}
+.catA-tbl-wrap th.slot-hdr input,.catA-tbl-wrap th.slot-hdr select{width:100%;border:none;border-bottom:1px solid var(--g5);border-radius:0;background:rgba(13,92,46,.04);text-align:center;font-weight:600;color:var(--g1);padding:6px 8px;font-size:12px}
+.catA-tbl-wrap td.slot-val{text-align:center;padding:0}
+.catA-tbl-wrap td.slot-val textarea{width:100%;border:none;background:transparent;resize:none;font-family:inherit;font-size:12px;color:var(--tx2);text-align:center;padding:6px 8px;min-height:40px;line-height:1.4}
+.catA-tbl-wrap td.slot-val textarea:focus{background:rgba(13,92,46,.04);outline:none}
+.catA-tbl-wrap td.slot-val textarea.covd{color:var(--g1)}
+.catA-tbl-wrap td.slot-val textarea.notcov{color:#c0392b}
+
+/* ══ DISCLAIMER ══ */
+.disc{background:var(--warn);border:1.5px solid var(--warnb);border-radius:var(--r);padding:10px 14px;margin-top:14px;font-size:11px;color:var(--warnt);line-height:1.6}
+.disc strong{font-weight:700}
+
+/* ══ VIEW TOGGLE ══ */
+.view{display:none}
+.view.active{display:block}
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--g6)}
+::-webkit-scrollbar-thumb{background:var(--g5);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--tx4)}
+
+@media(max-width:680px){
+  .hdr{flex-wrap:wrap;gap:8px}
+  .nav{flex-wrap:wrap}
+  .main{padding:12px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-brand">
+    <img src="data:image/png;base64,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" alt="Seven Insurance" style="height:30px;width:auto;background:#1a2e1a;border-radius:6px;padding:4px 8px">
+    <div style="width:1px;height:32px;background:var(--g5);margin:0 4px"></div>
+    <div>
+      <div class="hdr-title">Master Benefit Comparison</div>
+      <div class="hdr-sub">UAE Health Insurance · Seven Insurance Brokers</div>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="nav-tab active" onclick="switchView('benefits',this)">📋 Benefits</button>
+    <button class="nav-tab" onclick="switchView('network',this)">🏥 Hospital Network</button>
+    <button class="nav-tab" onclick="switchView('premium',this)">💰 Premium Summary</button>
+    <button class="nav-tab" onclick="switchView('catA',this)">📝 Cat A Builder</button>
+    <button class="nav-tab" id="editModeBtn" onclick="toggleEditMode()" style="border-color:#b87214;color:#b87214;margin-left:8px">✏️ Edit Data</button>
+  </div>
+</div>
+
+<!-- ═══ BENEFITS VIEW ═══ -->
+<div id="view-benefits" class="view active">
+  <div class="main">
+    <div class="fbar">
+      <div class="fg">
+        <div class="fl">Insurer</div>
+        <select id="b-ins-sel" onchange="applyBFilters()">
+          <option value="">All Insurers</option>
+          <option>GIG</option><option>Sukoon</option><option>Max Health</option>
+          <option>Cigna</option><option>Allianz</option><option>Bupa</option>
+          <option>HealthX</option><option>Liva Regional</option><option>ADNIC</option>
+        </select>
+      </div>
+      <div class="fg">
+        <div class="fl">Search benefit</div>
+        <input type="text" id="b-search" placeholder="e.g. Maternity…" oninput="applyBFilters()">
+      </div>
+      <span class="pill-count" id="b-col-ct">32 plans</span>
+      <button class="reset" onclick="resetBFilters()">↺ Reset</button>
+    </div>
+    <div class="ins-pills" id="b-pills"></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead id="b-thead"></thead>
+        <tbody id="b-tbody"></tbody>
+      </table>
+    </div>
+    <div class="disc"><strong>Disclaimer:</strong> This benefit overview is for information purposes only. The complete list of policy terms, conditions, limitations and exclusions will be set out in the specific policy. While every effort is made to ensure accuracy, we are not liable for any typographical errors. Please review the Insurer's proposal forms before finalising any quote.</div>
+  </div>
+</div>
+
+<!-- ═══ NETWORK VIEW ═══ -->
+<div id="view-network" class="view">
+  <div class="main">
+    <div class="fbar">
+      <div class="fg">
+        <div class="fl">Insurer</div>
+        <select id="n-ins-sel" onchange="applyNetFilters()">
+          <option value="">All Insurers</option>
+        </select>
+      </div>
+      <div class="fg">
+        <div class="fl">Hospital search</div>
+        <input type="text" id="n-search" placeholder="Hospital name…" oninput="applyNetFilters()">
+      </div>
+      <span class="pill-count" id="n-col-ct">44 networks</span>
+      <button class="reset" onclick="resetNetFilters()">↺ Reset</button>
+    </div>
+
+    <div class="net-legend">
+      <div class="leg-item"><div class="leg-dot ld-full">✔</div><span>Full Coverage — in-network, no co-pay</span></div>
+      <div class="leg-item"><div class="leg-dot ld-copay">◑</div><span>Co-pay applies (e.g. 20% on OP/IP)</span></div>
+      <div class="leg-item"><div class="leg-dot ld-ip">IP</div><span>In-Patient only</span></div>
+      <div class="leg-item"><div class="leg-dot ld-none">✘</div><span>Not in network</span></div>
+    </div>
+
+    <div class="net-tbl-wrap">
+      <table>
+        <thead id="n-thead"></thead>
+        <tbody id="n-tbody"></tbody>
+      </table>
+    </div>
+    <div class="disc"><strong>Notes:</strong> 1. Summary of key hospitals only — not the full network list. 2. Networks subject to change as per provider. 3. Underwritten plans — undeclared pre-existing & chronic conditions will not be covered.</div>
+  </div>
+</div>
+
+<!-- ═══ PREMIUM VIEW ═══ -->
+<div id="view-premium" class="view">
+  <div class="main">
+    <p style="color:var(--tx3);margin-bottom:14px;font-size:12px">Enter premium per category. Totals and averages calculate automatically.</p>
+    <div class="prem-grid" id="prem-grid"></div>
+    <div class="disc"><strong>Note:</strong> Premiums shown are indicative only and subject to change once assessed by an insurance underwriter. VAT not included.</div>
+  </div>
+</div>
+
+<!-- ═══ EDIT MODE PANEL ═══ -->
+<div id="editPanel" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.55);overflow-y:auto">
+  <div style="background:#fff;max-width:780px;margin:30px auto;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="background:var(--g1);padding:14px 20px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="color:#fff;font-size:15px;font-weight:700">✏️ Edit Benefit Data</div>
+        <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:2px">Changes save to this browser. To push to all users, update the source file.</div>
+      </div>
+      <button onclick="closeEditPanel()" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-family:inherit">✕ Close</button>
+    </div>
+
+    <!-- Auth gate -->
+    <div id="editAuth" style="padding:30px;text-align:center">
+      <div style="font-size:14px;font-weight:600;color:var(--tx);margin-bottom:14px">Enter editor password</div>
+      <input type="password" id="editPwd" placeholder="Password" style="padding:8px 12px;border:1.5px solid var(--g5);border-radius:6px;font-size:14px;width:200px;text-align:center;font-family:inherit" onkeydown="if(event.key==='Enter')checkEditPwd()">
+      <br><br>
+      <button onclick="checkEditPwd()" style="background:var(--g1);color:#fff;border:none;padding:8px 22px;border-radius:6px;cursor:pointer;font-size:13px;font-family:inherit;font-weight:600">Unlock</button>
+      <div id="editAuthErr" style="color:#c0392b;font-size:12px;margin-top:8px"></div>
+    </div>
+
+    <!-- Editor body (hidden until unlocked) -->
+    <div id="editBody" style="display:none;padding:16px 20px">
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:flex-end">
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin-bottom:4px">Insurer</div>
+          <select id="editIns" onchange="loadEditPlan()" style="min-width:130px">
+            <option value="">— Select —</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin-bottom:4px">Plan</div>
+          <select id="editPlan" onchange="loadEditRows()" style="min-width:160px" disabled>
+            <option value="">— Pick insurer —</option>
+          </select>
+        </div>
+        <button onclick="saveEditRows()" style="background:var(--g1);color:#fff;border:none;padding:7px 18px;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;font-weight:600;margin-left:auto">💾 Save Changes</button>
+        <button onclick="resetEditPlan()" style="background:#fff;color:#c0392b;border:1.5px solid #c0392b;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit">↺ Reset to Default</button>
+      </div>
+      <div id="editSaveMsg" style="display:none;background:#e8f4ee;border:1px solid var(--g5);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--g1);margin-bottom:10px"></div>
+      <div style="overflow-y:auto;max-height:55vh;border:1.5px solid var(--g5);border-radius:8px">
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr>
+              <th style="background:var(--g7);padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;position:sticky;top:0;border-bottom:2px solid var(--g5);width:220px">Benefit</th>
+              <th style="background:var(--g7);padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;position:sticky;top:0;border-bottom:2px solid var(--g5)">Current Value <span style="font-weight:400;text-transform:none;letter-spacing:0">(editable)</span></th>
+            </tr>
+          </thead>
+          <tbody id="editRows"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--tx4);line-height:1.5">
+        💡 <strong>Tip:</strong> For optional benefits with multiple tiers, separate options with <code style="background:#f0f4f0;padding:1px 4px;border-radius:3px"> / </code> — the Cat A Builder will convert these into a dropdown automatically.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CAT A BUILDER VIEW ═══ -->
+<div id="view-catA" class="view">
+  <div class="main">
+    <div class="catA-wrap">
+      <div class="catA-toolbar">
+        <div>
+          <label style="display:block">📝 Benefit Comparison Builder — up to 6 plans side-by-side</label>
+          <span style="font-size:11px;color:var(--tx3);font-weight:400;text-transform:none;letter-spacing:0">Pick an insurer → pick a plan → cells auto-fill. All cells stay editable for manual adjustments.</span>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px;flex-shrink:0">
+          <button class="export-btn" style="background:var(--tx3)" onclick="clearCatA()">✕ Clear All</button>
+          <button class="export-btn" onclick="printCatA()">🖨 Print / Export PDF</button>
+        </div>
+      </div>
+      <div class="catA-tbl-wrap">
+        <table id="catA-table">
+          <thead id="catA-thead"></thead>
+          <tbody id="catA-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="disc"><strong>Disclaimer:</strong> This benefit overview is for information purposes only. The complete list of policy terms, conditions, limitations and exclusions will be set out in the specific policy agreed between yourself and the Insurance Company. While every effort is made to ensure the accuracy of the content, we are not liable for any typographical errors, error of fact, or any other inconsistency. We would advise you to review the Insurer's proposal forms before finalising any quote.</div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════════════
+   DATA
+   ═══════════════════════════════════════════════════════════ */
+
+const PLANS = [
+  {insurer:'GIG',plan:'Health Secure 1'},{insurer:'GIG',plan:'Health Secure 2'},{insurer:'GIG',plan:'Health Secure 3'},
+  {insurer:'GIG',plan:'Health Secure 4'},{insurer:'GIG',plan:'Health Secure 5'},{insurer:'GIG',plan:'Health Secure 6'},
+  {insurer:'GIG',plan:'Health Secure 7'},
+  {insurer:'Sukoon',plan:'Premier'},{insurer:'Sukoon',plan:'Edge'},{insurer:'Sukoon',plan:'Signature'},{insurer:'Sukoon',plan:'Advance'},
+  {insurer:'Max Health',plan:'MaxMed Platinum'},{insurer:'Max Health',plan:'MaxMed Gold'},{insurer:'Max Health',plan:'MaxMed Silver'},
+  {insurer:'Max Health',plan:'MaxMed Bronze'},{insurer:'Max Health',plan:'MaxMed Chrome'},
+  {insurer:'Cigna',plan:'Flex 1'},{insurer:'Cigna',plan:'Flex 2'},{insurer:'Cigna',plan:'Flex 3'},{insurer:'Cigna',plan:'Flex 4'},
+  {insurer:'Cigna',plan:'SmartCare 1'},{insurer:'Cigna',plan:'SmartCare 2'},{insurer:'Cigna',plan:'SmartCare 3'},
+  {insurer:'Allianz',plan:'Summit 5000'},{insurer:'Allianz',plan:'Summit 4000'},
+  {insurer:'Bupa',plan:'Bupa Ultimate'},{insurer:'Bupa',plan:'Bupa Elite'},{insurer:'Bupa',plan:'Bupa Premier'},{insurer:'Bupa',plan:'Bupa Select'},
+  {insurer:'HealthX',plan:'Xclusive'},
+  {insurer:'Liva Regional',plan:'SME Plan DXB'},
+  {insurer:'ADNIC',plan:'Dubai SME Plan'},
+];
+
+const BENEFIT_DATA = [
+  {section:'SUMMARY OF BENEFITS',rows:[
+    ['Area of Cover','Worldwide','Worldwide excl USA','Worldwide excl USA','Regional (UAE+GCC+Asia)','Regional (UAE+GCC+Asia)','Regional (UAE+GCC+Asia)','UAE + Home Country','Worldwide / WW excl USA & CAN','WW excl USA & CAN','UAE+Arab+SE Asia','UAE+Arab+SE Asia','Worldwide excl USA','Worldwide excl USA','Worldwide excl USA','Worldwide excl USA','Worldwide excl USA','Worldwide / WW excl USA / Regional','Worldwide / WW excl USA / Regional','Worldwide / WW excl USA / Regional','Worldwide / WW excl USA / Regional','WW excl USA / Regional','WW excl USA / Regional','WW excl USA / Regional','Worldwide / WW excl USA','Worldwide / WW excl USA','Worldwide','WW / WW excl USA / Regional ME','WW / WW excl USA / Regional ME','WW excl USA / Regional ME','UAE Only / Multiple options','UAE / GCC / Subcontinent','UAE / Multiple options'],
+    ['Annual Limit','AED 10,000,000','AED 7,500,000','AED 5,000,000','AED 2,500,000','AED 1,000,000','AED 500,000','AED 250,000','AED 3,000,000','AED 1,000,000','AED 500,000','AED 150,000','AED 4,000,000','AED 3,000,000','AED 1,000,000','AED 500,000','AED 150,000','$7,500,000','$7,500,000','$1,500,000','$1,500,000','AED 5,000,000','AED 1,300,000','AED 500,000','AED 5,000,000','AED 4,000,000','Unlimited','AED 13,400,000','AED 4,700,000','AED 1,000,000','AED 150K–2.5M options','AED 150K–1M options','AED 250K–2.5M options'],
+    ['Non-Elective Emergency Cover','Covered','AED 750,000','AED 500,000','AED 250,000','AED 100,000','AED 50,000','Not Covered','Worldwide 90 days','WW excl USA & CAN 90 days','WW excl USA & CAN 90 days','Not Covered','Covered','Covered','Covered','Covered','Covered','Covered – Max 30 days','Covered – Max 30 days','Covered – Max 30 days','Covered – Max 30 days','Covered','Covered','Covered','Covered – Max 42 days','Covered – Max 42 days','Covered','30 days / max $150,000 outside AoC','30 days / max $150,000 outside AoC','30 days / max $150,000 outside AoC','100% of Actuals (Max UAE Rates)','Multiple options','For max 90 days'],
+    ['Network','A.1 Network','A.1 Network','A.2 Network','A.1 Network','A.2 Network','A.3/A.4 Network','A.4/A.5 Network','Premium','Edge / Signature + Medcare','Signature / Sig + Medcare','Advance','Gold','Silver Premium','Silver Classic','Green','Emerald','Comprehensive / General Plus','Comprehensive / General Plus','Comprehensive / General Plus','Comprehensive / General Plus','Cigna Open 1','Cigna Open 2','Cigna Open 3','Comprehensive / Standard / RN Enhanced','Comprehensive / Standard / RN Enhanced','Premium','Premium / Sig + Medcare','Premium / Sig + Medcare','Premium / Sig + Medcare','Comprehensive / Multiple options','NAS / Nextcare / Mednet options','NAS / Nextcare / ADNIC options'],
+    ['Third Party Administrator (TPA)','In-House','In-House','In-House','In-House','In-House','In-House','In-House','In-House','In-House','In-House','In-House','MedNet / NAS / Neuron','MedNet / NAS / Neuron','MedNet / NAS / Neuron','MedNet / NAS / Neuron','MedNet / NAS / Neuron','Neuron','Neuron','Neuron','Neuron','Neuron','Neuron','Neuron','In-House (Nextcare)','In-House (Nextcare)','Bupa In-House','Bupa In-House','Bupa In-House','Bupa In-House','NAS','NAS / Nextcare / Mednet','NAS / Nextcare / ADNIC'],
+    ['Out of Network','100% R&C','100% R&C','100% R&C','100% R&C','100% R&C','100% R&C','100% R&C','80% of Actuals','70% of Actuals','70% of Actuals','70% of Actuals','80% R&C','80% R&C','80% R&C','80% R&C','80% R&C','100% / 50% of Actuals','100% / 50% of Actuals','100% / 50% of Actuals','100% / 50% of Actuals','50% of Actuals','50% of Actuals','50% of Actuals','100% R&C','100% R&C','100% of Actuals','100% / 80% of Actuals','100% / 80% / 60% of Actuals','100% / 80% / 60% of Actuals','80% of Actuals','80% R&C','80% R&C'],
+    ['Pre-existing & Chronic Conditions','AED 150,000','AED 150,000','AED 150,000','AED 150,000','AED 150,000','AED 150,000','AED 150,000','AED 150,000','AED 150,000','AED 150,000','AED 150,000','AED 150,000','AED 150,000','AED 150,000','AED 150,000','AED 150,000','Covered','Covered','Covered','Covered','AED 250,000','AED 250,000','AED 250,000','MHD Covered / FMU $43,000','MHD Covered / FMU $43,000','Covered','Covered','Covered','Covered','AED 150K–Covered options','Covered','Covered'],
+  ]},
+  {section:'INPATIENT (IP)',rows:[
+    ['Deductible / Co-Insurance','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','Nil co-pay','20% co-pay max AED 5,000','30% co-pay max AED 10,000','None','None','None','None','None','None','None / options up to 20%','None','None'],
+    ['Hospital Accommodation','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Semi-Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Private Room','Suite / Private / Semi-Private','Private Room','Private Room'],
+    ['Consultant / Surgeon / Anaesthetist Fees',...Array(32).fill('Covered')],
+    ['Surgical Ops, Nursing, Drugs & Dressings',...Array(32).fill('Covered')],
+    ['Organ Transplant','Covered','Covered','Covered','Covered','Covered','Covered','Covered','AED 100,000 + 20%','AED 100,000 + 20%','AED 100,000 + 20%','AED 100,000 + 20%','AED 100,000 + 20%','AED 100,000 + 20%','AED 100,000 + 20%','AED 100,000 + 20%','AED 100,000 + 20%','Covered','Covered','Covered','Covered','Covered','AED 50,000','AED 30,000','Covered','Covered','Covered','Covered','Covered','Covered','AED 250K–500K (network options)','AED 100,000 + 20%','AED 100,000 + 20%'],
+    ['Psychiatric Treatment (IP)','AED 15,000 + 30%','AED 10,000 + 30%','AED 10,000 + 30%','AED 5,000 + 30%','AED 5,000 + 30%','AED 5,000 + 30%','AED 5,000 + 30%','AED 25,000 (IP+OP combined)','AED 25,000 (IP+OP combined)','Not Covered','Not Covered','AED 10,000 + 20%','AED 10,000 + 20%','AED 10,000 + 20%','AED 10,000 + 20%','AED 10,000 + 20%','Covered – Max 30 days','Covered – Max 30 days','$1,000 – Max 30 days','Not Covered','Covered – Max 30 days','Covered – Max 20 days','Covered – Max 15 days','Covered','AED 10,000','Covered','Covered','Covered','Covered','Emergency only','Not Covered / AED 10,000 + 20%','Not Covered / AED 10,000 + 20%'],
+    ['Kidney Dialysis','Covered','Covered','Covered','Covered','Covered','Covered','Covered','AED 60,000 + 20%','AED 60,000 + 20%','AED 60,000 + 20%','AED 60,000 + 20%','AED 60,000 + 20%','AED 60,000 + 20%','AED 60,000 + 20%','AED 60,000 + 20%','AED 60,000 + 20%','Covered','Covered','Covered','Covered','Covered','AED 50,000','AED 30,000','Covered','Covered','Covered','Covered','Covered','Covered','AED 200K–300K (network options)','AED 60,000','AED 60,000 + 20%'],
+  ]},
+  {section:'OUTPATIENT (OP)',rows:[
+    ['Maximum OP Limit','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','None','$43,000','None','None','None','None','None','None','None'],
+    ['Deductible / Co-Insurance (OP)','Nil','20% max AED 50','20% max AED 50','20% max AED 50','20% max AED 50','20% max AED 50','20% max AED 50','Nil / 20% max AED 50','20% max AED 50–100','20% max AED 30–50','20% max AED 30–50','Nil / 20% max AED 50–100','Nil / 20% max AED 50–100','Nil / 20% max AED 50–100','Nil / 20% max AED 50–100','Nil / 20% max AED 50–100','Nil / 20% max $13','Nil / 20% max $13','Nil / 20% max $13','Nil / 20% max $13','20% max AED 50–100','20% co-pay options','20%–30% co-pay options','10% max $14 / 20% max $28','10% max $14 / 20% max $28','Nil / 20% max AED 50–100','Nil / 20% max AED 50–100','Nil / 20% max AED 100','Nil co-pay','Nil / 10%–20% co-pay options','20% max AED 25–50','20% max AED 50–100'],
+    ['Consultant (GP) Fees',...Array(32).fill('Covered')],
+    ['Specialist Fees',...Array(32).fill('Covered')],
+    ['Diagnostic Tests','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered / 10% co-pay max AED 100','Covered / 10% co-pay max AED 100','Covered / 10% co-pay max AED 100','Covered / 10% co-pay max AED 100','Covered / 10% co-pay max AED 100','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered / co-pay options','Covered / 10%–20% co-pay','Covered / 10%–20% co-pay'],
+    ['Prescribed Medication','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered / 20% co-pay','Covered / 10%–20% co-pay','Covered / 10%–20% co-pay','Covered / 10%–20% co-pay','Covered / 10%–20% co-pay','Covered / 10%–20% co-pay','Covered / 10%–20% co-pay','Covered / 10%–20% co-pay','Covered / 10%–20% co-pay','Covered','Covered','Covered','$4,000','Covered / AED 10,000','Covered / AED 7,500','AED 5,000–7,500','Covered','Covered','Covered','Covered / 20% max AED 100','Covered / 20% max AED 100','$2,000–$20,000 options','AED 3,000–Covered options','AED 2,500–Covered options','AED 7,500–Covered options'],
+    ['Physiotherapy','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','8–25 sessions (options)','8–25 sessions (options)','8–25 sessions (options)','8–25 sessions (options)','6–15 sessions (options)','Covered','Covered','Covered','10 sessions','Covered','15 sessions','10 sessions','Covered','Covered','60 sessions','50 sessions','30 sessions','15 sessions','Post-hosp + 6–20 sessions options','8–16 sessions / Covered','Covered'],
+    ['Psychiatric Treatment (OP)','AED 15,000 + 30%','AED 10,000 + 30%','AED 10,000 + 30%','AED 5,000 + 30%','AED 5,000 + 30%','AED 5,000 + 30%','AED 5,000 + 30%','AED 25,000 combined','AED 25,000 combined','AED 800 + 30% (counselling)','AED 800 + 30% (counselling)','AED 10,000 + 20%','AED 10,000 + 20%','AED 10,000 + 20%','AED 10,000 + 20%','AED 10,000 + 20%','$1,500 + 50%','$1,500 + 50%','$1,000 + 50%','Not Covered','AED 15,000','AED 12,000','AED 10,000','$10,000','Covered (10 sessions)','Covered','Covered','$8,500','$8,500','AED 800–AED 20,000 options','Not Covered / AED 10,000 + 20%','Not Covered / AED 10,000 + 20%'],
+    ['Alternative Treatment','AED 5,000','AED 4,000','Not Covered','AED 3,000','Not Covered','Not Covered','Not Covered','AED 3,000','AED 3,000','AED 3,000','Not Covered','Not Covered / AED 500–2,500','Not Covered / AED 500–2,500','Not Covered / AED 500–2,500','Not Covered / AED 500–2,500','Not Covered / AED 500–2,500','Covered','Covered','Covered','Not Covered','AED 5,000','AED 3,500','AED 2,500','$1,500','$750','AED 3,400','AED 2,040','AED 1,360','AED 680','Not Covered / AED 1,000–10,000','Not Covered / AED 1,500–3,000','Not Covered / AED 1,000–3,000'],
+    ['Complementary Treatment','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Combined with Alternative','Combined with Alternative','Combined with Alternative','Combined with Alternative','Combined with Alternative','Combined with Alternative','Combined with Alternative','Combined with Alternative','Not Covered','Combined with Alternative','Combined with Alternative','Combined with Alternative','$4,000','$1,000','50 sessions','30 sessions','20 sessions','10 sessions','Combined with Alternative','Combined with Alternative','Combined with Alternative'],
+  ]},
+  {section:'MATERNITY',rows:[
+    ['Out-Patient Maternity','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered / 10% co-pay','10% co-pay options','10% co-pay options','10% co-pay options','Covered / 10% co-pay','Covered / 10% co-pay','Covered / 10% co-pay','Covered / 10% co-pay','Covered / 10% co-pay','Covered','Covered','Covered','Covered','Covered + 10% co-pay','Covered + 10% co-pay','Covered + 10% co-pay','Covered / 10% co-pay','Covered / 10% co-pay','—','—','—','—','Covered / 10% co-pay','Covered / 10% co-pay','10% max AED 50'],
+    ['Normal Delivery','AED 50,000','AED 40,000','AED 25,000','AED 25,000','AED 15,000','AED 15,000','AED 10,000','Covered + 10%','Covered + 10%','AED 15,000 + 10%','AED 10,000 + 10%','AED 10K–30K options','AED 10K–30K options','AED 10K–30K options','AED 10K–30K options','AED 10K–30K options','Covered','Covered','$3,000–$8,000','$3,000–$5,000','AED 25,000','AED 15,000','AED 12,000 + 10%','$2,750–Covered options','$2,750–Covered options','Covered','Covered','$8,500 / Covered','$2,750–$6,000','AED 10K–Covered options','AED 10K–Covered options','AED 10K–Covered options'],
+    ['Medically Necessary C-Section','AED 50,000','AED 40,000','AED 25,000','AED 25,000','AED 15,000','AED 15,000','AED 10,000','Covered + 10%','Covered + 10%','AED 15,000 + 10%','AED 10,000 + 10%','AED 10K–30K options','AED 10K–30K options','AED 10K–30K options','AED 10K–30K options','AED 10K–30K options','Covered','Covered','$3,000–$8,000','$3,000–$5,000','AED 25,000','AED 15,000','AED 12,000 + 10%','$2,750–Covered options','$2,750–Covered options','Covered','Covered','$25,500 / Covered','$2,890–$10,000','AED 10K–Covered options','AED 10K–Covered options','AED 10K–Covered options'],
+    ['Maternity Emergencies',...Array(32).fill('Covered')],
+    ['Congenital Birth Defects','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Covered','Covered','Covered','Covered','Emergency basis','Emergency basis','Emergency basis','$100,000 lifetime','$50,000 lifetime','$193,800','$155,000','$116,000','$84,000','AED 10K–300K options','Not Covered','Not Covered'],
+    ['New Born Cover',...Array(32).fill('Covered — first 30 days from birth')],
+  ]},
+  {section:'FURTHER BENEFITS',rows:[
+    ['Cancer Cover',...Array(32).fill('Covered')],
+    ['Ambulance Services (Emergency)',...Array(32).fill('Covered')],
+    ['Repatriation of Mortal Remains','AED 10,000','AED 10,000','AED 10,000','AED 10,000','AED 10,000','AED 10,000','AED 10,000','AED 5,000','AED 5,000','AED 5,000','AED 5,000','AED 10,000','AED 10,000','AED 10,000','AED 10,000','AED 10,000','Covered','Covered','Covered','Not Covered','AED 30,000','AED 10,000','AED 7,500','Covered','Covered','Covered','Covered','Covered','Covered','AED 50,000','AED 5K–20K options','AED 5,000'],
+    ['Vaccinations (Child & Adult)','Child (≤6 yrs) + Adult Flu','Child (≤6 yrs) + Adult Flu','Child (≤6 yrs) + Adult Flu','Child (≤6 yrs) + Adult Flu','Child (≤6 yrs) + Adult Flu','Child (≤6 yrs) + Adult Flu','Child (≤6 yrs) + Adult Flu','Child + Adult AED 2,000','Child + Adult Flu','Child + Adult Flu','Child + Adult Flu','Child + Adult Flu','Child + Adult Flu','Child + Adult Flu','Child + Adult Flu','Child + Adult Flu','Covered','Covered','Covered','Covered','Child + Adult AED 2,000','Child + Adult AED 1,000','Child + Adult AED 750','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Child + Adult Flu','Child + Adult Flu'],
+    ['Telehealth Services','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TruDoc','TeleHealth Hub','TeleHealth Hub','Bupa Telus (Lifeworks)','Bupa Telus (Lifeworks)','Bupa Telus (Lifeworks)','Bupa Telus (Lifeworks)','TruDoc','TruDoc','TruDoc'],
+  ]},
+  {section:'ADDITIONAL BENEFITS',rows:[
+    ['Dental Benefit','AED 500 (30%) + AED 5,000 (20%)','AED 500 (30%) + AED 4,000 (20%)','AED 500 (30%) + AED 3,000 (20%)','AED 500 (30%) + AED 3,000 (20%)','AED 500 (30%) + AED 1,500 (20%)','AED 500 (30%) + AED 1,500 (20%)','AED 500 (30%) + AED 1,500 (20%)','AED 500 (30%) + AED 5,000 (20%)','AED 500 (30%) + AED 3,000 (20%)','AED 500 (30%) + AED 2,000 (20%)','AED 500 (30%) only','AED 500–AED 10,000 options','AED 500–AED 10,000 options','AED 500–AED 10,000 options','AED 500–AED 10,000 options','AED 500–AED 10,000 options','Not Covered / $450–$3,750 plans','Not Covered / $450–$3,750 plans','Not Covered / $450–$3,750 plans','Not Covered / $450–$3,750 plans','AED 500–4,000 options','AED 500–4,000 options','AED 500–4,000 options','$250–$5,000 options','$250–$5,000 options','$136 + $7,350 options','$136 + $4,100 options','$136 + $1,000–$4,000 options','$136 + $840','AED 500–AED 10,000 options','AED 500–AED 5,000 options','AED 500–AED 5,000 options'],
+    ['Optical Benefit','Not Covered / AED 1,500 (20%)','Not Covered / AED 1,500 (20%)','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered','Not Covered / AED 1,500 (20%)','Not Covered','Not Covered','Not Covered','Not Covered / AED 500–1,500','Not Covered / AED 500–1,500','Not Covered / AED 500–1,500','Not Covered / AED 500–1,500','Not Covered / AED 500–1,500','Not Covered / $200–$500','Not Covered / $200–$500','Not Covered / $200–$500','Not Covered / $200–$500','Not Covered / AED 500–1,000','Not Covered / AED 500–1,000','Not Covered / AED 500–1,000','Not Covered / $250–$500','Not Covered / $250–$500','$425 + 20%','Not Covered / $425','Not Covered / $425','Not Covered / $425','Not Covered / AED 500–2,500','Not Covered / AED 1K–2K','Not Covered / AED 500–1,500'],
+    ['Annual Health Checkup','AED 3,000','AED 1,000','Not Covered','AED 1,000','Not Covered','Not Covered','Not Covered','Basic Routine','Basic Routine','Basic Routine','Not Covered','Not Covered / AED 500–2,000','Not Covered / AED 500–2,000','Not Covered / AED 500–2,000','Not Covered / AED 500–2,000','Not Covered / AED 500–2,000','Not Covered / $450–$1,000','Not Covered / $450–$1,000','Not Covered / $450–$1,000','Not Covered / $450–$1,000','Not Covered / AED 500–2,000','Not Covered / AED 500–2,000','Not Covered / AED 500–2,000','$750–$2,000 options','$250–$750','AED 7,800','AED 2,000','AED 1,000','Not Covered','Not Covered / AED 1K–3K','Not Covered','Not Covered'],
+    ['Road Traffic Accidents','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Not Covered','Not Covered','Not Covered','Not Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Covered','Not Covered','Not Covered'],
+    ['Emergency Dental & Optical',...Array(32).fill('Covered')],
+  ]},
+];
+
+// Network data: coverage type per [hospital][networkIdx]
+// Types: 'F'=Full, 'C'=Co-pay, 'IP'=In-Patient only, 'N'=Not covered
+const NET_PLANS = [
+  {insurer:'GIG',tpa:'GIG In-House',network:'A.1'},
+  {insurer:'GIG',tpa:'GIG In-House',network:'A.2'},
+  {insurer:'GIG',tpa:'GIG In-House',network:'A.3'},
+  {insurer:'GIG',tpa:'GIG In-House',network:'A.4'},
+  {insurer:'GIG',tpa:'GIG In-House',network:'A.5'},
+  {insurer:'Sukoon',tpa:'Sukoon In-House',network:'Premium'},
+  {insurer:'Sukoon',tpa:'Sukoon In-House',network:'Edge'},
+  {insurer:'Sukoon',tpa:'Sukoon In-House',network:'Sig+Medcare'},
+  {insurer:'Sukoon',tpa:'Sukoon In-House',network:'Signature'},
+  {insurer:'Sukoon',tpa:'Sukoon In-House',network:'Advance'},
+  {insurer:'Max Health',tpa:'Mednet',network:'Gold'},
+  {insurer:'Max Health',tpa:'Mednet',network:'Silver Prem'},
+  {insurer:'Max Health',tpa:'Mednet',network:'Silver Classic'},
+  {insurer:'Max Health',tpa:'Mednet',network:'Green'},
+  {insurer:'Max Health',tpa:'Mednet',network:'Emerald'},
+  {insurer:'Max Health',tpa:'NAS',network:'Comprehensive'},
+  {insurer:'Max Health',tpa:'NAS',network:'General'},
+  {insurer:'Max Health',tpa:'NAS',network:'Restricted'},
+  {insurer:'Cigna',tpa:'Neuron',network:'Comprehensive'},
+  {insurer:'Cigna',tpa:'Neuron',network:'General'},
+  {insurer:'Cigna',tpa:'Neuron',network:'Open 1'},
+  {insurer:'Cigna',tpa:'Neuron',network:'Open 2'},
+  {insurer:'Cigna',tpa:'Neuron',network:'Open 3'},
+  {insurer:'Allianz',tpa:'Nextcare',network:'Comprehensive'},
+  {insurer:'Allianz',tpa:'Nextcare',network:'Standard'},
+  {insurer:'Daman',tpa:'Daman',network:'Royal'},
+  {insurer:'Daman',tpa:'Daman',network:'Supreme'},
+  {insurer:'Daman',tpa:'Daman',network:'Grand'},
+  {insurer:'April',tpa:'Mednet',network:'Premium'},
+  {insurer:'April',tpa:'Mednet',network:'Classic'},
+  {insurer:'April',tpa:'Mednet',network:'Green'},
+  {insurer:'Bupa',tpa:'Bupa',network:'Premium'},
+  {insurer:'Bupa',tpa:'Bupa',network:'Sig+Medcare'},
+  {insurer:'HealthX',tpa:'NAS',network:'Comprehensive'},
+  {insurer:'HealthX',tpa:'NAS',network:'General'},
+  {insurer:'HealthX',tpa:'NAS',network:'GN excl MC'},
+  {insurer:'HealthX',tpa:'NAS',network:'RN+Medcare'},
+  {insurer:'HealthX',tpa:'NAS',network:'Restricted'},
+  {insurer:'Liva',tpa:'NAS',network:'Comprehensive'},
+];
+
+// F=Full, C=Co-pay condition applies, IP=In-Patient only, N=Not in network
+const HOSPITALS = [
+  {name:'Adam Vital Hospital',loc:'Dubai',cov:['F','F','F','F','N','F','F','F','F','N','F','F','N','N','N','F','F','N','F','N','C','C','C','F','N','F','F','F','F','N','N','F','F','F','F','F','N','N','F']},
+  {name:'Al Garhoud Private Hospital',loc:'Dubai',cov:['F','F','F','F','N','F','F','F','F','N','F','F','F','N','N','F','F','F','F','F','C','C','C','F','F','F','F','F','F','F','N','F','F','F','F','F','F','F','F']},
+  {name:'Al Jalila Childrens Specialty',loc:'Dubai',cov:['F','C','N','N','N','F','N','N','N','N','F','F','N','N','N','F','N','N','F','N','C','C','C','F','N','F','F','N','F','N','N','F','N','F','N','N','N','N','F']},
+  {name:'Al Zahra Hospital',loc:'Dubai',cov:['F','F','F','F','N','F','F','F','F','N','F','F','N','N','N','F','F','N','F','F','C','C','C','F','N','F','F','F','F','F','N','F','F','F','F','F','N','N','F']},
+  {name:'American Hospital',loc:'Dubai',cov:['F','C','N','N','N','F','F','N','N','N','F','IP','N','N','N','F','F','N','F','F','C','C','C','IP','N','F','N','N','F','N','N','F','N','F','F','F','N','N','F']},
+  {name:'American Spine Center',loc:'Dubai',cov:['F','F','F','N','N','F','F','F','F','N','F','F','N','N','N','F','F','N','F','F','C','C','C','F','N','F','F','F','F','N','N','F','F','F','F','F','N','N','F']},
+  {name:'Aster Cedars Hospital',loc:'Dubai',cov:['F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F']},
+  {name:'Aster Hospital (Al Qusais)',loc:'Dubai',cov:['F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F']},
+  {name:'Aster Hospital (Mankhool)',loc:'Dubai',cov:['F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F']},
+  {name:'Aster Hospital Sonapur',loc:'Dubai',cov:['F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F']},
+  {name:'Burjeel Hospital Adv Surgery',loc:'Dubai',cov:['F','F','F','F','N','F','F','F','F','N','F','N','N','N','N','F','F','N','F','F','C','C','C','F','N','F','F','F','N','N','N','F','F','F','F','F','N','N','F']},
+  {name:'Canadian Specialist Hospital',loc:'Dubai',cov:['F','F','F','F','N','F','F','F','F','F','F','F','F','F','N','F','F','F','F','F','C','C','C','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F']},
+  {name:'Clemenceau Medical Center',loc:'Dubai',cov:['F','F','F','N','N','F','F','F','F','N','F','F','F','F','N','F','F','N','F','F','C','C','C','F','N','F','F','F','F','F','F','F','F','F','F','F','N','N','F']},
+  {name:'Dr. Sulaiman Al Habib',loc:'Dubai',cov:['F','F','F','N','N','F','F','F','F','N','F','F','N','N','N','F','F','N','F','F','C','C','C','F','N','F','F','F','F','N','N','F','F','F','F','F','N','N','F']},
+  {name:'Dubai London Clinic',loc:'Dubai',cov:['F','F','F','F','N','F','F','F','F','N','F','F','N','N','N','F','F','N','F','F','C','C','C','F','N','F','F','F','F','N','N','F','F','F','F','F','N','N','F']},
+  {name:'Emirates Hospital',loc:'Dubai',cov:['F','F','F','F','N','F','F','F','F','N','F','F','F','F','N','F','F','F','F','F','C','C','C','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F']},
+  {name:'Emirates Specialty Hospital',loc:'Dubai',cov:['F','F','F','N','N','F','F','F','F','N','F','F','F','F','N','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F']},
+  {name:'Fakeeh University Hospital',loc:'Dubai',cov:['F','F','F','F','N','F','F','F','F','N','F','F','N','N','N','F','F','N','F','F','C','C','C','F','N','F','F','N','F','N','N','F','F','F','F','F','N','N','F']},
+  {name:'Gargash Hospital',loc:'Dubai',cov:['F','F','F','N','N','F','F','F','F','N','F','F','N','N','N','F','F','F','F','F','F','F','F','F','N','F','F','F','F','N','N','F','F','F','F','F','F','F','F']},
+  {name:'International Modern Hospital',loc:'Dubai',cov:['F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F']},
+  {name:'Kings College Hospital London',loc:'Dubai',cov:['F','C','N','N','N','F','F','N','N','N','F','F','N','N','N','F','F','N','F','F','C','C','C','F','N','F','F','N','F','F','N','F','N','F','F','N','N','N','F']},
+  {name:'Medcare Royal Hospital',loc:'Dubai',cov:['F','F','F','F','N','F','F','F','N','N','F','F','N','N','N','F','F','N','F','F','C','C','C','F','N','F','F','F','F','N','N','F','F','F','F','F','F','N','F']},
+  {name:'Medcare Hospital (Al Safa)',loc:'Dubai',cov:['F','F','F','F','N','F','F','F','N','N','F','F','F','N','N','F','F','N','F','F','C','C','C','F','F','F','F','F','F','F','N','F','F','F','F','F','F','N','F']},
+  {name:'Medcare Orthopaedics & Spine',loc:'Dubai',cov:['F','F','F','F','N','F','F','F','N','N','F','F','F','N','N','F','F','N','F','F','C','C','C','F','F','F','F','F','F','F','N','F','F','F','F','F','F','N','F']},
+  {name:'Medcare Women & Children',loc:'Dubai',cov:['F','F','F','F','N','F','F','F','N','N','F','F','N','N','N','F','F','N','F','F','F','F','F','F','F','F','F','F','F','F','N','F','F','F','F','F','F','N','F']},
+  {name:'Medeor 24X7 Hospital',loc:'Dubai',cov:['F','F','F','F','N','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F']},
+  {name:'Mediclinic City Hospital',loc:'Dubai',cov:['F','C','N','N','N','F','F','N','N','N','F','F','N','N','N','F','F','N','F','F','C','C','C','F','N','F','F','N','F','N','N','F','N','F','F','N','N','N','F']},
+  {name:'Mediclinic Parkview Hospital',loc:'Dubai',cov:['F','C','N','N','N','F','F','N','N','N','F','F','N','N','N','F','F','N','F','F','C','C','C','F','N','F','F','N','F','N','N','F','N','F','F','N','N','N','F']},
+  {name:'Mediclinic Welcare Hospital',loc:'Dubai',cov:['F','C','N','N','N','F','F','N','N','N','F','F','N','N','N','F','F','N','F','F','C','C','C','F','N','F','F','N','F','N','N','F','N','F','F','N','N','N','F']},
+  {name:'Mirdif Private Hospital',loc:'Dubai',cov:['F','F','F','F','F','F','N','N','N','N','F','N','N','N','N','F','F','N','F','F','C','C','C','F','N','F','F','N','N','N','N','F','N','F','F','F','N','N','F']},
+  {name:'NMC Royal Hospital',loc:'Dubai',cov:['F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F']},
+  {name:'NMC Specialty Hospital',loc:'Dubai',cov:['F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F']},
+  {name:'Novomed Specialized Surgical',loc:'Dubai',cov:['F','F','F','F','F','F','F','N','N','N','F','F','N','N','N','F','F','N','F','F','C','C','C','F','N','F','F','F','F','N','N','F','N','F','F','F','N','N','F']},
+  {name:'Prime Hospital',loc:'Dubai',cov:['F','F','F','F','N','F','F','F','F','N','F','F','F','F','N','F','F','F','F','F','C','C','C','F','N','F','F','F','F','F','F','F','F','F','F','F','F','F','F']},
+  {name:'Saudi German Hospital',loc:'Dubai',cov:['F','F','F','F','N','F','F','F','F','F','F','F','N','N','N','F','F','N','F','F','C','C','C','F','F','F','F','F','F','F','N','F','F','F','F','F','F','N','F']},
+  {name:'Valiant Healthcare',loc:'Dubai',cov:['F','N','N','N','N','F','F','N','N','N','F','N','N','N','N','F','F','N','F','F','C','C','C','F','N','F','F','F','N','N','N','F','N','F','F','F','N','N','F']},
+  {name:'Zulekha Hospital',loc:'Dubai',cov:['F','F','F','F','F','F','F','F','F','F','F','F','F','F','N','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F','F']},
+];
+
+const PREM_INSURERS = [
+  'Sukoon','Liva','Max Health','Cigna','ADNIC','Bupa','HealthX','GIG'
+];
+const PREM_CATS = ['Cat A','Cat B','Cat C','Cat D'];
+const PREM_MEMBERS = {A:10,B:10,C:15,D:20};
+
+const CATROW_LABELS = [
+  {sec:'SUMMARY OF BENEFITS',rows:['Area of Cover','Non-Elective Emergency Cover','Annual Limit','Network','Third Party Administrator (TPA)','Out of Network','Pre-existing & Chronic Conditions']},
+  {sec:'INPATIENT (IP)',rows:['Deductible / Co-Insurance','Hospital Accommodation','Consultant\'s, Surgeon\'s, Physicians & Anaesthetist\'s Fees','Surgical Operations, Nursing Care, Drugs & Dressings','Organ Transplant','Psychiatric Treatment','Kidney Dialysis']},
+  {sec:'OUTPATIENT (OP)',rows:['Maximum OP Limit','Deductible / Co-Insurance (OP)','Consultant (GP) Fees','Specialist Fees','Diagnostic Tests','Prescribed Medication','Physiotherapy','Psychiatric Treatment','Alternative Treatment','Complementary Treatment']},
+  {sec:'MATERNITY',rows:['Out-Patient Maternity','Normal Delivery','Medically Necessary C-Section','Maternity Emergencies','Congenital Birth Defects','New Born Cover']},
+  {sec:'FURTHER BENEFITS',rows:['Cancer Cover','Ambulance Services (Emergency)','Repatriation of Mortal Remains','Vaccinations (Child & Adult)','Telehealth Services']},
+  {sec:'ADDITIONAL BENEFITS',rows:['Dental Benefit','Optical Benefit','Annual Health Checkup','Road Traffic Accidents','Emergency Dental & Optical']},
+];
+
+const NUM_SLOTS = 6;
+
+/* ═══════════════════════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════════════════════ */
+let bSelectedInsurers = new Set();
+let currentView = 'benefits';
+
+/* ═══════════════════════════════════════════════════════════
+   VIEW SWITCHING
+   ═══════════════════════════════════════════════════════════ */
+function switchView(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  btn.classList.add('active');
+  currentView = id;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BENEFITS
+   ═══════════════════════════════════════════════════════════ */
+const INSURERS_LIST = [...new Set(PLANS.map(p => p.insurer))];
+
+function initBenefitPills() {
+  const wrap = document.getElementById('b-pills');
+  wrap.innerHTML = '<span style="font-size:11px;color:var(--tx3);align-self:center;font-weight:600">Quick filter:</span>';
+  INSURERS_LIST.forEach(ins => {
+    const p = document.createElement('button');
+    p.className = 'ins-pill';
+    p.textContent = ins;
+    p.onclick = () => toggleInsurer(ins, p);
+    wrap.appendChild(p);
+  });
+}
+
+function toggleInsurer(ins, el) {
+  bSelectedInsurers.has(ins) ? bSelectedInsurers.delete(ins) : bSelectedInsurers.add(ins);
+  el.classList.toggle('on', bSelectedInsurers.has(ins));
+  applyBFilters();
+}
+
+function getVisiblePlans() {
+  const dropIns = document.getElementById('b-ins-sel').value;
+  return PLANS.map((p, i) => ({...p, idx: i})).filter(p => {
+    if (dropIns && p.insurer !== dropIns) return false;
+    if (bSelectedInsurers.size > 0 && !bSelectedInsurers.has(p.insurer)) return false;
+    return true;
+  });
+}
+
+function applyBFilters() {
+  const vis = getVisiblePlans();
+  const q = document.getElementById('b-search').value.toLowerCase();
+  renderBenefits(vis, q);
+}
+
+function resetBFilters() {
+  document.getElementById('b-ins-sel').value = '';
+  document.getElementById('b-search').value = '';
+  bSelectedInsurers.clear();
+  document.querySelectorAll('.ins-pill').forEach(p => p.classList.remove('on'));
+  renderBenefits(PLANS.map((p,i)=>({...p,idx:i})));
+}
+
+function renderBenefits(vis, q='') {
+  document.getElementById('b-col-ct').textContent = vis.length + ' plans';
+
+  // Group by insurer for header spans
+  const groups = {};
+  vis.forEach(p => { groups[p.insurer] = (groups[p.insurer]||0)+1; });
+
+  const thead = document.getElementById('b-thead');
+  let r1 = '<tr><th style="min-width:230px;position:sticky;left:0;z-index:20;background:#fff">Benefit</th>';
+  Object.entries(groups).forEach(([ins,cnt]) => {
+    r1 += `<th class="ins-group" colspan="${cnt}">${ins}</th>`;
+  });
+  r1 += '</tr>';
+
+  let r2 = '<tr><th style="position:sticky;left:0;z-index:20;background:#fff"></th>';
+  vis.forEach(p => {
+    r2 += `<th class="plan-col">${p.plan}</th>`;
+  });
+  r2 += '</tr>';
+  thead.innerHTML = r1 + r2;
+
+  const tbody = document.getElementById('b-tbody');
+  let html = '';
+  BENEFIT_DATA.forEach(sec => {
+    const matchRows = sec.rows.filter(row => !q || row[0].toLowerCase().includes(q));
+    if (!matchRows.length) return;
+    html += `<tr class="sec-hdr"><td colspan="${vis.length+1}">${sec.section}</td></tr>`;
+    matchRows.forEach(row => {
+      html += `<tr><td class="row-label">${row[0]}</td>`;
+      vis.forEach(p => {
+        const v = row[p.idx+1] || '';
+        html += `<td class="val">${fmtBval(v)}</td>`;
+      });
+      html += '</tr>';
+    });
+  });
+  tbody.innerHTML = html || '<tr><td colspan="99" style="text-align:center;padding:30px;color:var(--tx4)">No matching benefits found</td></tr>';
+}
+
+function fmtBval(v) {
+  if (!v || v === '—') return '<span class="empty-cell">—</span>';
+  if (v === 'Covered' || v === 'Covered — first 30 days from birth') return `<span class="covered">${v}</span>`;
+  if (v === 'Not Covered') return `<span class="not-covered">Not Covered</span>`;
+  if (v.startsWith('Not Covered /') || v.startsWith('Not Covered –')) {
+    const rest = v.replace(/^Not Covered\s*[/–]\s*/,'');
+    return `<span class="not-covered">Not Covered</span><br><span style="color:var(--tx3);font-size:11px">${rest}</span>`;
+  }
+  if (/not covered/i.test(v) && v.length < 15) return `<span class="not-covered">${v}</span>`;
+  return v;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NETWORK
+   ═══════════════════════════════════════════════════════════ */
+function initNetworkFilter() {
+  const sel = document.getElementById('n-ins-sel');
+  [...new Set(NET_PLANS.map(p=>p.insurer))].forEach(ins => {
+    const o = document.createElement('option');
+    o.value = ins; o.textContent = ins;
+    sel.appendChild(o);
+  });
+}
+
+function applyNetFilters() {
+  const ins = document.getElementById('n-ins-sel').value;
+  const q = document.getElementById('n-search').value.toLowerCase();
+  const vis = NET_PLANS.map((p,i)=>({...p,idx:i})).filter(p => !ins || p.insurer === ins);
+  renderNetwork(vis, q);
+}
+
+function resetNetFilters() {
+  document.getElementById('n-ins-sel').value = '';
+  document.getElementById('n-search').value = '';
+  renderNetwork(NET_PLANS.map((p,i)=>({...p,idx:i})));
+}
+
+function renderNetwork(vis, q='') {
+  document.getElementById('n-col-ct').textContent = vis.length + ' networks';
+
+  const groups = {};
+  vis.forEach(p => { groups[p.insurer] = (groups[p.insurer]||0)+1; });
+
+  const thead = document.getElementById('n-thead');
+  let r1 = '<tr><th style="min-width:220px;position:sticky;left:0;z-index:20;background:#fff">Hospital</th><th>Emirate</th>';
+  Object.entries(groups).forEach(([ins,cnt]) => r1 += `<th class="net-ins" colspan="${cnt}">${ins}</th>`);
+  r1 += '</tr>';
+
+  let r2 = '<tr><th style="position:sticky;left:0;z-index:20;background:#fff"></th><th></th>';
+  vis.forEach(p => r2 += `<th class="net-plan">${p.network}</th>`);
+  r2 += '</tr>';
+
+  let r3 = '<tr><th style="position:sticky;left:0;z-index:20;background:#fff"></th><th></th>';
+  vis.forEach(p => r3 += `<th class="net-tpa">${p.tpa}</th>`);
+  r3 += '</tr>';
+
+  thead.innerHTML = r1 + r2 + r3;
+
+  const filtered = HOSPITALS.filter(h => !q || h.name.toLowerCase().includes(q));
+  const tbody = document.getElementById('n-tbody');
+  let html = '';
+  filtered.forEach(h => {
+    html += `<tr><td class="hosp-name">${h.name}</td><td class="hosp-loc">${h.loc}</td>`;
+    vis.forEach(p => {
+      const t = h.cov[p.idx] || 'N';
+      html += netCell(t);
+    });
+    html += '</tr>';
+  });
+  tbody.innerHTML = html || '<tr><td colspan="99" style="text-align:center;padding:30px;color:var(--tx4)">No hospitals found</td></tr>';
+}
+
+function netCell(t) {
+  if (t==='F') return '<td class="net-cell net-full" title="Full coverage — no co-pay"><div class="leg-dot ld-full" style="margin:auto">✔</div></td>';
+  if (t==='C') return '<td class="net-cell net-copay" title="Co-pay applies on OP/IP visits"><div class="leg-dot ld-copay" style="margin:auto">◑</div></td>';
+  if (t==='IP') return '<td class="net-cell net-ip" title="In-Patient only"><div class="leg-dot ld-ip" style="margin:auto;font-size:9px;font-weight:700">IP</div></td>';
+  return '<td class="net-cell net-none" title="Not in network"><div class="leg-dot ld-none" style="margin:auto">✘</div></td>';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PREMIUM
+   ═══════════════════════════════════════════════════════════ */
+function buildPremiumGrid() {
+  const grid = document.getElementById('prem-grid');
+  PREM_INSURERS.forEach(ins => {
+    const card = document.createElement('div');
+    card.className = 'pcard';
+    let catRows = PREM_CATS.map((cat, ci) => {
+      const letter = ['A','B','C','D'][ci];
+      return `<div class="prow">
+        <div>
+          <div style="font-weight:600;color:var(--tx)">${cat}</div>
+          <div style="display:flex;align-items:center;gap:4px;margin-top:2px">
+            <span class="plabel" style="font-size:11px">Members:</span>
+            <input type="number" class="mem-in" value="${PREM_MEMBERS[letter]}" id="mem-${ins}-${cat}" oninput="calcPrem('${ins}')">
+          </div>
+        </div>
+        <div class="pright">
+          <div>
+            <div class="plabel" style="font-size:11px;margin-bottom:3px">Premium (AED)</div>
+            <input type="number" class="prem-in" placeholder="0" id="prem-${ins}-${cat}" oninput="calcPrem('${ins}')">
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="pcard-hdr">
+        <h3>${ins}</h3>
+        <span class="pbadge" id="pbadge-${ins}">AED 0</span>
+      </div>
+      <div class="pcard-body">
+        ${catRows}
+        <div class="ptotals">
+          <div class="prow"><span class="ptot-label">Total Members</span><span class="ptot-val" id="ptm-${ins}">55</span></div>
+          <div class="prow"><span class="ptot-label">Total Premium (excl. VAT)</span><span class="ptot-val" id="ptp-${ins}">AED 0</span></div>
+          <div class="prow"><span class="ptot-label">Avg Premium / Member</span><span class="ptot-val" id="pta-${ins}">AED 0</span></div>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function calcPrem(ins) {
+  let mem=0, tot=0;
+  PREM_CATS.forEach(cat => {
+    mem += parseInt(document.getElementById('mem-'+ins+'-'+cat)?.value)||0;
+    tot += parseFloat(document.getElementById('prem-'+ins+'-'+cat)?.value)||0;
+  });
+  const avg = mem>0 ? tot/mem : 0;
+  const f = n => n.toLocaleString('en-AE',{minimumFractionDigits:0,maximumFractionDigits:0});
+  document.getElementById('ptm-'+ins).textContent = mem;
+  document.getElementById('ptp-'+ins).textContent = 'AED '+f(tot);
+  document.getElementById('pta-'+ins).textContent = 'AED '+f(avg);
+  document.getElementById('pbadge-'+ins).textContent = 'AED '+f(tot);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CAT A BUILDER
+   ─────────────────────────────────────────────────────────
+   Flow:
+   1. User picks Insurer  →  Plan dropdown populates
+   2. User picks Plan     →  all benefit cells fill instantly
+   3. Every cell stays editable for manual tweaks
+   4. Print/Export renders a clean printable sheet
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Flat lookup: "Row label" → benefit values array (index = PLANS index) ── */
+const BENEFIT_LOOKUP = (() => {
+  const map = {};
+  BENEFIT_DATA.forEach(sec => {
+    sec.rows.forEach(row => {
+      // row[0] = label, row[1..] = values per plan
+      map[row[0]] = row.slice(1);
+    });
+  });
+  return map;
+})();
+
+/* ── Flat ordered list of all rows the Cat A table shows ── */
+const CATA_ROWS = (() => {
+  const out = [];
+  CATROW_LABELS.forEach(sec => {
+    sec.rows.forEach(label => out.push({ sec: sec.sec, label }));
+  });
+  return out;
+})();
+
+/* Map each CATROW label → the matching BENEFIT_DATA label (handles slight wording differences) */
+const LABEL_MAP = {
+  'Area of Cover':                                          'Area of Cover',
+  'Non-Elective Emergency Cover':                           'Non-Elective Emergency Cover',
+  'Annual Limit':                                           'Annual Limit',
+  'Network':                                                'Network',
+  'Third Party Administrator (TPA)':                        'Third Party Administrator (TPA)',
+  'Out of Network':                                         'Out of Network',
+  'Pre-existing & Chronic Conditions':                      'Pre-existing & Chronic Conditions',
+  'Deductible / Co-Insurance':                              'Deductible / Co-Insurance',
+  'Hospital Accommodation':                                 'Hospital Accommodation',
+  "Consultant's, Surgeon's, Physicians & Anaesthetist's Fees": 'Consultant / Surgeon / Anaesthetist Fees',
+  'Surgical Operations, Nursing Care, Drugs & Dressings':   'Surgical Ops, Nursing, Drugs & Dressings',
+  'Organ Transplant':                                       'Organ Transplant',
+  'Psychiatric Treatment':                                  'Psychiatric Treatment (IP)',
+  'Kidney Dialysis':                                        'Kidney Dialysis',
+  'Maximum OP Limit':                                       'Maximum OP Limit',
+  'Deductible / Co-Insurance (OP)':                         'Deductible / Co-Insurance (OP)',
+  'Consultant (GP) Fees':                                   'Consultant (GP) Fees',
+  'Specialist Fees':                                        'Specialist Fees',
+  'Diagnostic Tests':                                       'Diagnostic Tests',
+  'Prescribed Medication':                                  'Prescribed Medication',
+  'Physiotherapy':                                          'Physiotherapy',
+  'Psychiatric Treatment (OP)':                             'Psychiatric Treatment (OP)',
+  'Alternative Treatment':                                  'Alternative Treatment',
+  'Complementary Treatment':                                'Complementary Treatment',
+  'Out-Patient Maternity':                                  'Out-Patient Maternity',
+  'Normal Delivery':                                        'Normal Delivery',
+  'Medically Necessary C-Section':                          'Medically Necessary C-Section',
+  'Maternity Emergencies':                                  'Maternity Emergencies',
+  'Congenital Birth Defects':                               'Congenital Birth Defects',
+  'New Born Cover':                                         'New Born Cover',
+  'Cancer Cover':                                           'Cancer Cover',
+  'Ambulance Services (Emergency)':                         'Ambulance Services (Emergency)',
+  'Repatriation of Mortal Remains':                         'Repatriation of Mortal Remains',
+  'Vaccinations (Child & Adult)':                           'Vaccinations (Child & Adult)',
+  'Telehealth Services':                                    'Telehealth Services',
+  'Dental Benefit':                                         'Dental Benefit',
+  'Optical Benefit':                                        'Optical Benefit',
+  'Annual Health Checkup':                                  'Annual Health Checkup',
+  'Road Traffic Accidents':                                 'Road Traffic Accidents',
+  'Emergency Dental & Optical':                             'Emergency Dental & Optical',
+};
+
+/* Lookup benefit value for a given catA label + plan index */
+function lookupValue(catALabel, planIdx) {
+  const dataLabel = LABEL_MAP[catALabel] || catALabel;
+  const vals = BENEFIT_LOOKUP[dataLabel];
+  if (!vals) return '';
+  return vals[planIdx] || '';
+}
+
+/* ── Build the table structure once on load ── */
+function buildCatA() {
+  const thead = document.getElementById('catA-thead');
+  const tbody = document.getElementById('catA-tbody');
+
+  /* Header: Insurer select → Plan select (populated dynamically) */
+  let hdr = `<tr>
+    <th style="position:sticky;left:0;z-index:20;background:var(--g7);min-width:230px;font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;padding:10px 12px">Benefit</th>`;
+
+  for (let s = 0; s < NUM_SLOTS; s++) {
+    hdr += `<th class="slot-hdr" style="vertical-align:top;padding:0;min-width:170px">
+      <div style="padding:8px 8px 4px;border-bottom:1px solid var(--g5);background:rgba(13,92,46,.06)">
+        <div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Insurer</div>
+        <select id="cA-ins-${s}" onchange="onSlotInsurer(${s})"
+          style="width:100%;border:1.5px solid var(--g5);border-radius:5px;background:#fff;color:var(--g1);font-weight:700;font-size:12px;font-family:inherit;padding:4px 6px;cursor:pointer">
+          <option value="">— Select —</option>
+          ${INSURERS_LIST.map(i => `<option value="${i}">${i}</option>`).join('')}
+        </select>
+      </div>
+      <div style="padding:4px 8px;border-bottom:1px solid var(--g5);background:rgba(13,92,46,.03)">
+        <div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Plan</div>
+        <select id="cA-plan-${s}" onchange="onSlotPlan(${s})" disabled
+          style="width:100%;border:1.5px solid var(--g5);border-radius:5px;background:#f4f4f4;color:var(--tx3);font-size:12px;font-family:inherit;padding:4px 6px;cursor:not-allowed">
+          <option value="">— Pick insurer first —</option>
+        </select>
+      </div>
+      <div style="padding:4px 8px 6px;background:rgba(13,92,46,.02)">
+        <div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">No. of Members</div>
+        <input type="number" id="cA-mem-${s}" placeholder="e.g. 10"
+          style="width:100%;border:1.5px solid var(--g5);border-radius:5px;background:#fff;font-size:12px;text-align:center;padding:4px 6px;font-family:inherit;color:var(--tx2)">
+      </div>
+    </th>`;
+  }
+  hdr += '</tr>';
+  thead.innerHTML = hdr;
+
+  /* Body: one row per benefit, one editable cell per slot */
+  let html = '';
+  let prevSec = '';
+  CATA_ROWS.forEach((row, rowIdx) => {
+    if (row.sec !== prevSec) {
+      html += `<tr class="sec-hdr"><td colspan="${NUM_SLOTS + 1}">${row.sec}</td></tr>`;
+      prevSec = row.sec;
+    }
+    html += `<tr><td class="row-label" style="position:sticky;left:0;background:#fff;z-index:5;font-size:12px">${row.label}</td>`;
+    for (let s = 0; s < NUM_SLOTS; s++) {
+      html += `<td class="slot-val">
+        <textarea id="cA-${rowIdx}-${s}" rows="2" placeholder="—"
+          oninput="styleCell(this)"
+          style="width:100%;border:none;background:transparent;resize:none;font-family:inherit;font-size:12px;color:var(--tx2);text-align:center;padding:7px 8px;min-height:44px;line-height:1.45;display:block"></textarea>
+      </td>`;
+    }
+    html += '</tr>';
+  });
+  tbody.innerHTML = html;
+}
+
+/* ── When insurer chosen: populate plan dropdown ── */
+function onSlotInsurer(slot) {
+  const ins = document.getElementById(`cA-ins-${slot}`).value;
+  const planSel = document.getElementById(`cA-plan-${slot}`);
+
+  // Clear cells for this slot
+  CATA_ROWS.forEach((_, rowIdx) => {
+    const ta = document.getElementById(`cA-${rowIdx}-${slot}`);
+    if (ta) { ta.value = ''; styleCell(ta); }
+  });
+
+  if (!ins) {
+    planSel.innerHTML = '<option value="">— Pick insurer first —</option>';
+    planSel.disabled = true;
+    planSel.style.background = '#f4f4f4';
+    planSel.style.cursor = 'not-allowed';
+    return;
+  }
+
+  // Get plans for this insurer
+  const plans = PLANS.filter(p => p.insurer === ins);
+  planSel.innerHTML = `<option value="">— Select plan —</option>` +
+    plans.map(p => `<option value="${p.plan}">${p.plan}</option>`).join('');
+  planSel.disabled = false;
+  planSel.style.background = '#fff';
+  planSel.style.color = 'var(--g1)';
+  planSel.style.cursor = 'pointer';
+}
+
+/* ── When plan chosen: fill all cells for this slot ── */
+/* ── Auto-colour cells based on content ── */
+function styleCell(ta) {
+  const v = ta.value.trim();
+  ta.style.color = '';
+  ta.style.fontWeight = '';
+  if (!v || v === '—') {
+    ta.style.color = '#b0c0b0';
+    return;
+  }
+  const lower = v.toLowerCase();
+  if (lower === 'covered' || lower.startsWith('covered')) {
+    ta.style.color = '#0d5c2e';
+    ta.style.fontWeight = '600';
+  } else if (lower === 'not covered') {
+    ta.style.color = '#c0392b';
+    ta.style.fontWeight = '600';
+  } else if (lower.startsWith('not covered')) {
+    ta.style.color = '#c0392b';
+  } else if (lower === 'none' || lower === 'nil') {
+    ta.style.color = '#0d5c2e';
+  }
+}
+
+/* ── Clear a single slot ── */
+function clearSlot(slot) {
+  document.getElementById(`cA-ins-${slot}`).value = '';
+  document.getElementById(`cA-mem-${slot}`).value = '';
+  onSlotInsurer(slot); // also resets plan dropdown
+}
+
+/* ── Clear all ── */
+function clearCatA() {
+  for (let s = 0; s < NUM_SLOTS; s++) clearSlot(s);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   OPTIONAL DROPDOWN DETECTION
+   ─────────────────────────────────────────────────────────
+   If a benefit value contains ' / ' it means the insurer
+   offers multiple tiers for that benefit. In the Cat A
+   Builder we render a <select> so the user picks one.
+   ═══════════════════════════════════════════════════════════ */
+function isOptional(val) {
+  return val && val.includes(' / ') && val.split(' / ').length >= 2;
+}
+
+/* ── onSlotPlan: fill all cells when a plan is chosen, with optional-value dropdowns ── */
+function onSlotPlan(slot) {
+  const planName = document.getElementById(`cA-plan-${slot}`).value;
+  if (!planName) return;
+  const planIdx = PLANS.findIndex(p => p.plan === planName);
+  if (planIdx < 0) return;
+
+  CATA_ROWS.forEach((row, rowIdx) => {
+    const cell = document.getElementById(`cA-${rowIdx}-${slot}`);
+    if (!cell) return;
+
+    // Get value — check Store override first
+    const storageKey = `bdata_${planName}_${row.label}`;
+    const stored = Store.get(storageKey);
+    const val = stored !== null ? stored : lookupValue(row.label, planIdx);
+    const parentTd = cell.parentElement;
+
+    if (isOptional(val)) {
+      // Replace textarea with a styled select
+      const options = val.split(' / ').map(o => o.trim()).filter(Boolean);
+      const sel = document.createElement('select');
+      sel.id = cell.id;
+      sel.style.cssText = 'width:100%;border:none;background:transparent;font-family:inherit;font-size:12px;color:var(--g1);font-weight:600;padding:7px 8px;cursor:pointer;min-height:44px;text-align:center';
+      sel.innerHTML = options.map(o => `<option value="${o}">${o}</option>`).join('');
+      sel.onchange = () => styleSelectCell(sel);
+      parentTd.innerHTML = '';
+      parentTd.appendChild(sel);
+      styleSelectCell(sel);
+    } else {
+      // Normal textarea
+      let ta = cell;
+      if (cell.tagName === 'SELECT') {
+        const newTa = document.createElement('textarea');
+        newTa.id = cell.id;
+        newTa.rows = 2;
+        newTa.placeholder = '—';
+        newTa.oninput = function(){ styleCell(this); };
+        newTa.style.cssText = 'width:100%;border:none;background:transparent;resize:none;font-family:inherit;font-size:12px;color:var(--tx2);text-align:center;padding:7px 8px;min-height:44px;line-height:1.45;display:block';
+        parentTd.innerHTML = '';
+        parentTd.appendChild(newTa);
+        ta = newTa;
+      }
+      ta.value = val;
+      styleCell(ta);
+      ta.style.height = 'auto';
+      ta.style.height = Math.max(44, ta.scrollHeight) + 'px';
+    }
+  });
+}
+
+function styleSelectCell(sel) {
+  const v = sel.value.toLowerCase();
+  if (v === 'not covered') { sel.style.color='#c0392b'; sel.style.fontWeight='600'; }
+  else if (v.startsWith('covered') || v === 'none' || v === 'nil') { sel.style.color='var(--g1)'; sel.style.fontWeight='600'; }
+  else { sel.style.color='var(--tx2)'; sel.style.fontWeight='500'; }
+}
+
+/* Also update printCatA to handle selects */
+function printCatA() {
+  const headers = [];
+  for (let s = 0; s < NUM_SLOTS; s++) {
+    const ins  = document.getElementById(`cA-ins-${s}`)?.value || '';
+    const plan = document.getElementById(`cA-plan-${s}`)?.value || '';
+    const mem  = document.getElementById(`cA-mem-${s}`)?.value || '';
+    headers.push({ ins, plan, mem });
+  }
+  const activeSlots = headers.map((h, i) => h.plan ? i : -1).filter(i => i >= 0);
+  if (!activeSlots.length) { alert('Please select at least one plan before printing.'); return; }
+
+  const colW = Math.floor(70 / activeSlots.length);
+  let tHead = `<tr>
+    <th style="width:30%;background:#e8f4ee;text-align:left">Benefit</th>
+    ${activeSlots.map(s => `<th style="width:${colW}%;background:#e8f4ee;text-align:center">
+      <div style="font-size:11px;font-weight:700;color:#0d5c2e">${headers[s].ins}</div>
+      <div style="font-size:10px;color:#1a2e1a;margin-top:2px">${headers[s].plan}</div>
+      ${headers[s].mem ? `<div style="font-size:9px;color:#5a7a5a">Members: ${headers[s].mem}</div>` : ''}
+    </th>`).join('')}
+  </tr>`;
+
+  let tBody = '';
+  let prevSec = '';
+  CATA_ROWS.forEach((row, rowIdx) => {
+    if (row.sec !== prevSec) {
+      tBody += `<tr><td colspan="${activeSlots.length + 1}" style="background:#0d5c2e;color:#fff;font-weight:800;font-size:9px;text-transform:uppercase;letter-spacing:.08em;padding:5px 8px">${row.sec}</td></tr>`;
+      prevSec = row.sec;
+    }
+    const cells = activeSlots.map(s => {
+      const el = document.getElementById(`cA-${rowIdx}-${s}`);
+      const v = el ? (el.tagName === 'SELECT' ? el.value : el.value?.trim()) || '—' : '—';
+      let style = 'color:#2a4a2a';
+      if (v.toLowerCase() === 'covered' || v.toLowerCase().startsWith('covered')) style = 'color:#0d5c2e;font-weight:600';
+      else if (v.toLowerCase() === 'not covered') style = 'color:#c0392b;font-weight:600';
+      return `<td style="text-align:center;${style}">${v.replace(/\n/g,'<br>')}</td>`;
+    }).join('');
+    tBody += `<tr><td style="font-weight:600;background:#f8fbf8">${row.label}</td>${cells}</tr>`;
+  });
+
+  // Logo for print header
+  const logoB64 = document.querySelector('.hdr-brand img')?.src || '';
+  const logoTag = logoB64 ? `<img src="${logoB64}" style="height:28px;background:#1a2e1a;border-radius:4px;padding:3px 6px">` : '';
+
+  const printHtml = `<!DOCTYPE html><html><head><title>Benefit Comparison Sheet</title>
+  <style>
+    body{font-family:Arial,sans-serif;font-size:10px;color:#1a2e1a;margin:12mm}
+    table{border-collapse:collapse;width:100%}
+    th,td{border:1px solid #c8dcc8;padding:5px 7px;vertical-align:top}
+    th{font-size:10px}
+    @media print{@page{margin:10mm;size:A4 landscape}}
+  </style></head><body>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;border-bottom:2px solid #c8dcc8;padding-bottom:10px">
+    ${logoTag}
+    <div>
+      <div style="font-size:14px;font-weight:700;color:#0d5c2e">Benefit Comparison Sheet</div>
+      <div style="font-size:9px;color:#5a7a5a">Seven Insurance Brokers · Generated ${new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</div>
+    </div>
+  </div>
+  <table><thead>${tHead}</thead><tbody>${tBody}</tbody></table>
+  <p style="margin-top:10px;font-size:8px;color:#7a9a7a">This benefit overview is for information purposes only. The complete list of policy terms, conditions, limitations and exclusions will be set out in the specific policy. We would advise you to review the Insurer's proposal forms before finalising any quote.</p>
+  </body></html>`;
+
+  const win = window.open('', '_blank');
+  win.document.write(printHtml);
+  win.document.close();
+  setTimeout(() => win.print(), 400);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   EDIT MODE — password-protected benefit data editor
+   Password stored as a simple hash. Default: "seven2026"
+   Change by running: Store.set('editPwdHash', btoa('yournewpassword'))
+   ═══════════════════════════════════════════════════════════ */
+const EDIT_PWD_DEFAULT = btoa('seven2026'); // base64 of password
+
+function toggleEditMode() {
+  const panel = document.getElementById('editPanel');
+  panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+  if (panel.style.display === 'flex') {
+    panel.style.alignItems = 'flex-start';
+    panel.style.justifyContent = 'center';
+    document.getElementById('editPwd').value = '';
+    document.getElementById('editAuthErr').textContent = '';
+    document.getElementById('editAuth').style.display = 'block';
+    document.getElementById('editBody').style.display = 'none';
+    setTimeout(() => document.getElementById('editPwd').focus(), 100);
+  }
+}
+
+function closeEditPanel() {
+  document.getElementById('editPanel').style.display = 'none';
+}
+
+function checkEditPwd() {
+  const entered = btoa(document.getElementById('editPwd').value);
+  const stored  = Store.get('editPwdHash') || EDIT_PWD_DEFAULT;
+  if (entered === stored) {
+    document.getElementById('editAuth').style.display = 'none';
+    document.getElementById('editBody').style.display = 'block';
+    populateEditInsurerSelect();
+  } else {
+    document.getElementById('editAuthErr').textContent = 'Incorrect password. Default is: seven2026';
+  }
+}
+
+function populateEditInsurerSelect() {
+  const sel = document.getElementById('editIns');
+  sel.innerHTML = '<option value="">— Select insurer —</option>' +
+    INSURERS_LIST.map(i => `<option value="${i}">${i}</option>`).join('');
+}
+
+function loadEditPlan() {
+  const ins = document.getElementById('editIns').value;
+  const planSel = document.getElementById('editPlan');
+  planSel.innerHTML = '<option value="">— Select plan —</option>';
+  planSel.disabled = !ins;
+  if (!ins) return;
+  PLANS.filter(p => p.insurer === ins).forEach(p => {
+    planSel.innerHTML += `<option value="${p.plan}">${p.plan}</option>`;
+  });
+  planSel.disabled = false;
+  document.getElementById('editRows').innerHTML = '';
+}
+
+
+
+/* Apply any saved edits from localStorage on load */
+/* ═══════════════════════════════════════════════════════════
+   SAFE STORAGE — localStorage is blocked in SharePoint
+   sandboxed iframes. This wrapper falls back to an
+   in-memory object so the page never crashes either way.
+   ═══════════════════════════════════════════════════════════ */
+const _memStore = {};
+const Store = (() => {
+  let _ls = null;
+  function ls() {
+    if (_ls !== null) return _ls;
+    try { localStorage.setItem('__test__','1'); localStorage.removeItem('__test__'); _ls = localStorage; }
+    catch(e) { _ls = false; }
+    return _ls;
+  }
+  return {
+    get(k)    { return ls() ? ls().getItem(k)    : (_memStore[k] ?? null); },
+    set(k,v)  { ls() ? ls().setItem(k,v)         : (_memStore[k] = v); },
+    remove(k) { ls() ? ls().removeItem(k)         : (delete _memStore[k]); },
+    keys()    { return ls() ? Object.keys(ls()).filter(k=>k.startsWith('bdata_'))
+                            : Object.keys(_memStore).filter(k=>k.startsWith('bdata_')); },
+  };
+})();
+
+/* Apply any saved edits from Store on load */
+function applyStoredEdits() {
+  Store.keys().forEach(key => {
+    const rest = key.slice(6);
+    for (const p of PLANS) {
+      if (rest.startsWith(p.plan + '_')) {
+        const rowLabel = rest.slice(p.plan.length + 1);
+        const planIdx  = PLANS.indexOf(p);
+        const dataLabel = LABEL_MAP[rowLabel] || rowLabel;
+        if (BENEFIT_LOOKUP[dataLabel]) {
+          BENEFIT_LOOKUP[dataLabel][planIdx] = Store.get(key);
+        }
+        break;
+      }
+    }
+  });
+}
+
+/* Patch saveEditRows and resetEditPlan to use Store instead of localStorage */
+function saveEditRows() {
+  const planName = document.getElementById('editPlan').value;
+  if (!planName) return;
+  const planIdx = PLANS.findIndex(p => p.plan === planName);
+  let savedCount = 0;
+
+  CATA_ROWS.forEach((row, rowIdx) => {
+    const ta = document.getElementById(`editval-${rowIdx}`);
+    if (!ta) return;
+    const newVal = ta.value.trim();
+    const defaultVal = lookupValue(row.label, planIdx);
+    const storageKey = `bdata_${planName}_${row.label}`;
+
+    if (newVal !== defaultVal) {
+      Store.set(storageKey, newVal);
+      const dataLabel = LABEL_MAP[row.label] || row.label;
+      if (BENEFIT_LOOKUP[dataLabel]) BENEFIT_LOOKUP[dataLabel][planIdx] = newVal;
+      savedCount++;
+    } else {
+      Store.remove(storageKey);
+    }
+  });
+
+  renderBenefits(getVisiblePlans());
+
+  const msg = document.getElementById('editSaveMsg');
+  msg.style.display = 'block';
+  msg.textContent = savedCount > 0
+    ? `✓ Saved ${savedCount} change${savedCount>1?'s':''} for ${planName}. Changes apply immediately.`
+    : `✓ No changes — all values match defaults for ${planName}.`;
+  setTimeout(() => { msg.style.display = 'none'; }, 4000);
+  loadEditRows();
+}
+
+function resetEditPlan() {
+  const planName = document.getElementById('editPlan').value;
+  if (!planName) return;
+  if (!confirm(`Reset all edits for ${planName} back to defaults?`)) return;
+  CATA_ROWS.forEach(row => Store.remove(`bdata_${planName}_${row.label}`));
+  // Reload page so BENEFIT_LOOKUP re-reads from source arrays
+  location.reload();
+}
+
+/* loadEditRows — uses Store for override detection */
+function loadEditRows() {
+  const planName = document.getElementById('editPlan').value;
+  if (!planName) return;
+  const planIdx = PLANS.findIndex(p => p.plan === planName);
+  if (planIdx < 0) return;
+
+  const tbody = document.getElementById('editRows');
+  let html = '';
+  let prevSec = '';
+
+  CATA_ROWS.forEach((row, rowIdx) => {
+    if (row.sec !== prevSec) {
+      html += `<tr><td colspan="2" style="background:rgba(13,92,46,.08);font-weight:800;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--g1);padding:6px 12px;border-bottom:1px solid var(--g5)">${row.sec}</td></tr>`;
+      prevSec = row.sec;
+    }
+    const storageKey  = `bdata_${planName}_${row.label}`;
+    const stored      = Store.get(storageKey);
+    const defaultVal  = lookupValue(row.label, planIdx);
+    const currentVal  = stored !== null ? stored : defaultVal;
+    const isModified  = stored !== null && stored !== defaultVal;
+
+    html += `<tr id="editrow-${rowIdx}" ${isModified ? 'style="background:#fffde8"' : ''}>
+      <td style="font-weight:600;font-size:12px;padding:7px 12px;border-bottom:1px solid var(--g6);width:220px;vertical-align:top">
+        ${row.label}
+        ${isModified ? '<span style="font-size:9px;color:#b87214;font-weight:700;margin-left:4px">✎ edited</span>' : ''}
+      </td>
+      <td style="padding:5px 8px;border-bottom:1px solid var(--g6)">
+        <textarea id="editval-${rowIdx}" rows="2"
+          style="width:100%;border:1.5px solid var(--g5);border-radius:5px;font-family:inherit;font-size:12px;padding:5px 8px;resize:vertical;line-height:1.4;color:var(--tx2)"
+          onfocus="this.style.borderColor='var(--g1)'"
+          onblur="this.style.borderColor='var(--g5)'"
+        >${currentVal}</textarea>
+      </td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INIT — wrapped in DOMContentLoaded so SharePoint iframe
+   DOM is fully ready before any getElementById is called.
+   ═══════════════════════════════════════════════════════════ */
+function boot() {
+  applyStoredEdits();
+  initBenefitPills();
+  initNetworkFilter();
+  buildPremiumGrid();
+  buildCatA();
+  renderBenefits(PLANS.map((p,i) => ({...p, idx:i})));
+  renderNetwork(NET_PLANS.map((p,i) => ({...p, idx:i})));
+
+  /* Close edit panel on backdrop click */
+  const editPanel = document.getElementById('editPanel');
+  if (editPanel) {
+    editPanel.addEventListener('click', function(e) {
+      if (e.target === this) closeEditPanel();
+    });
+  }
+
+  /* iframe height sync — safe for sandboxed iframes */
+  function sendHeight() {
+    try { window.parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*'); }
+    catch(e) {}
+  }
+  window.addEventListener('resize', sendHeight);
+  try {
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(sendHeight).observe(document.body);
+    }
+  } catch(e) {}
+  sendHeight();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot);
+} else {
+  boot();
+}
+</script>
+</body>
+</html>
